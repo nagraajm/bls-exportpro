@@ -1,0 +1,20 @@
+import { z } from 'zod';
+export declare const CurrencySchema: any;
+export type Currency = z.infer<typeof CurrencySchema>;
+export declare const ExchangeRateSchema: any;
+export type ExchangeRate = z.infer<typeof ExchangeRateSchema>;
+export declare const PaymentTermsSchema: any;
+export type PaymentTerms = z.infer<typeof PaymentTermsSchema>;
+export declare const CalculationSchema: any;
+export type Calculation = z.infer<typeof CalculationSchema>;
+export declare const PaymentStatusSchema: any;
+export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
+export declare const BankingDetailsSchema: any;
+export type BankingDetails = z.infer<typeof BankingDetailsSchema>;
+export declare const TaxConfigurationSchema: any;
+export type TaxConfiguration = z.infer<typeof TaxConfigurationSchema>;
+export declare const FinancialTransactionSchema: any;
+export type FinancialTransaction = z.infer<typeof FinancialTransactionSchema>;
+export declare const CostCenterSchema: any;
+export type CostCenter = z.infer<typeof CostCenterSchema>;
+//# sourceMappingURL=index.d.ts.map

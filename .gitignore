@@ -1,0 +1,106 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Production builds
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+!.env.example
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+.cursor/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+server.log
+frontend.log
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+.coverage
+.pytest_cache/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+pharma.db
+
+# Upload directories content (but keep structure)
+bls-exportpro/backend/uploads/excel/*
+bls-exportpro/backend/uploads/invoices/*
+bls-exportpro/backend/uploads/packing-lists/*
+bls-exportpro/backend/uploads/purchase-orders/*
+bls-exportpro/backend/uploads/temp/*
+!bls-exportpro/backend/uploads/excel/.gitkeep
+!bls-exportpro/backend/uploads/invoices/.gitkeep
+!bls-exportpro/backend/uploads/packing-lists/.gitkeep
+!bls-exportpro/backend/uploads/purchase-orders/.gitkeep
+!bls-exportpro/backend/uploads/temp/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+.temp/
+.cache/
+
+# Vite
+*.local
+
+# Documentation build
+docs/_build/
+docs/.vuepress/dist/
+
+# Misc
+*.bak
+*.orig
+*.rej
+.history/
+
+# PDF files in root
+*.pdf
+!docs-info/*.pdf

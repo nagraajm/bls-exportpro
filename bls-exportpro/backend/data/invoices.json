@@ -1,0 +1,26 @@
+[
+  {
+    "invoiceNumber": "PI-2025-00001",
+    "invoiceType": "proforma",
+    "orderId": "074ea791-d748-4956-a56e-f89b3a028d7d",
+    "invoiceDate": "2025-08-08T05:49:24.333Z",
+    "subtotal": 100,
+    "igst": 0,
+    "drawback": 1.2,
+    "rodtep": 0.7,
+    "totalAmount": 98.1,
+    "currency": "USD",
+    "bankDetails": {
+      "bankName": "STATE BANK OF INDIA",
+      "accountName": "BLS TRADING COMPANY",
+      "accountNumber": "12345678901234",
+      "swiftCode": "SBININBB",
+      "ifscCode": "SBIN0001234",
+      "branchAddress": "Main Branch, Chittoor, AP, India"
+    },
+    "termsAndConditions": "1. This is a Proforma Invoice and not a demand for payment.\n2. Validity: 30 days from the date of issue.\n3. Payment Terms: 100% advance payment via wire transfer.\n4. Delivery: Within 30-45 days after receipt of payment.\n5. All prices are FOB basis.",
+    "id": "e9f0bdc5-ed41-4f11-9643-6a8516e6b72e",
+    "createdAt": "2025-08-08T05:49:24.333Z",
+    "updatedAt": "2025-08-08T05:49:24.333Z"
+  }
+]

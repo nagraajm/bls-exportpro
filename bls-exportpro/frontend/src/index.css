@@ -1,0 +1,226 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* BLS Brand Colors from Logo */
+    --bls-blue-primary: #2563eb;
+    --bls-blue-secondary: #1e40af;
+    --bls-blue-light: #60a5fa;
+    --bls-orange: #f97316;
+    --bls-purple: #7c3aed;
+    --bls-teal: #06b6d4;
+    
+    /* Theme Colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --border-primary: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+  }
+
+  .light {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-primary: rgba(0, 0, 0, 0.12);
+    --glass-bg: rgba(248, 250, 252, 0.75);
+  }
+
+  .light body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #cbd5e1 100%);
+    color: var(--text-primary);
+  }
+
+  body {
+    @apply min-h-screen antialiased transition-colors duration-300;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, var(--bls-blue-primary, #2563eb) 0, transparent 60%),
+      radial-gradient(circle at 80% 20%, var(--bls-purple, #7c3aed) 0, transparent 60%),
+      radial-gradient(circle at 40% 40%, var(--bls-teal, #06b6d4) 0, transparent 60%),
+      radial-gradient(circle at 90% 70%, var(--bls-orange, #f97316) 0, transparent 60%);
+    opacity: 0.3;
+    z-index: -1;
+  }
+
+  .light body::before {
+    opacity: 0.15;
+    background: 
+      radial-gradient(circle at 20% 80%, #dbeafe 0, transparent 50%),
+      radial-gradient(circle at 80% 20%, #e9d5ff 0, transparent 50%),
+      radial-gradient(circle at 40% 40%, #ccfbf1 0, transparent 50%),
+      radial-gradient(circle at 90% 70%, #fed7aa 0, transparent 50%);
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: 
+      radial-gradient(circle at 30% 70%, var(--bls-blue-light, #60a5fa) 0, transparent 40%),
+      radial-gradient(circle at 70% 30%, var(--bls-purple, #7c3aed) 0, transparent 40%),
+      radial-gradient(circle at 50% 50%, var(--bls-teal, #06b6d4) 0, transparent 40%);
+    opacity: 0.2;
+    z-index: -1;
+  }
+
+  .light body::after {
+    opacity: 0.08;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-xl transition-all duration-300;
+    background: var(--glass-bg);
+    border: 1px solid var(--border-primary);
+  }
+
+  .glass-card {
+    @apply glass rounded-2xl p-6;
+    box-shadow: 
+      0 8px 32px rgba(31, 38, 135, 0.2),
+      inset 0 1px 1px var(--border-primary),
+      inset 0 -1px 1px var(--border-primary);
+    position: relative;
+  }
+
+  .light .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.85) 100%);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .bls-gradient-primary {
+    background: linear-gradient(135deg, var(--bls-blue-primary), var(--bls-purple));
+  }
+
+  .bls-gradient-secondary {
+    background: linear-gradient(135deg, var(--bls-teal), var(--bls-blue-light));
+  }
+
+  .bls-gradient-accent {
+    background: linear-gradient(135deg, var(--bls-orange), var(--bls-blue-primary));
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.05)
+    );
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .gradient-shadow {
+    box-shadow: 
+      0 0 40px -10px rgba(120, 119, 198, 0.5),
+      0 0 40px -10px rgba(255, 119, 198, 0.5);
+  }
+
+  .animate-gradient-xy {
+    background-size: 200% 200%;
+    animation: gradient 15s ease infinite;
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/20 rounded-full border-2 border-gray-900/50;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/25;
+  }
+
+  /* Selection styling */
+  ::selection {
+    @apply bg-primary/30 text-white;
+  }
+
+  /* Fix for Recharts hover backgrounds */
+  .recharts-surface {
+    background: transparent !important;
+  }
+  
+  .recharts-bar-rectangle:hover {
+    fill-opacity: 0.8;
+  }
+  
+  .recharts-bar {
+    background: transparent !important;
+  }
+  
+  .recharts-wrapper {
+    background: transparent !important;
+  }
+  
+  .recharts-layer:hover {
+    background: transparent !important;
+  }
+}

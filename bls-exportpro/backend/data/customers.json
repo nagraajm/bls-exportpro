@@ -1,0 +1,38 @@
+[
+  {
+    "companyName": "Cambodia Pharma Ltd",
+    "contactPerson": "John Doe",
+    "email": "john@cambodiapharma.com",
+    "phone": "+855 23 123 456",
+    "address": {
+      "street": "123 Norodom Blvd",
+      "city": "Phnom Penh",
+      "state": "Phnom Penh",
+      "country": "Cambodia",
+      "postalCode": "12000"
+    },
+    "taxId": "KH123456789",
+    "currency": "USD",
+    "id": "0ebba03e-cc98-41c0-98ef-a97c01be28ca",
+    "createdAt": "2025-08-08T05:42:47.254Z",
+    "updatedAt": "2025-08-08T05:42:47.254Z"
+  },
+  {
+    "companyName": "Vietnam Medical Supplies",
+    "contactPerson": "Nguyen Van A",
+    "email": "nguyen@vnmedical.vn",
+    "phone": "+84 28 1234 5678",
+    "address": {
+      "street": "456 Le Duan St",
+      "city": "Ho Chi Minh City",
+      "state": "Ho Chi Minh",
+      "country": "Vietnam",
+      "postalCode": "700000"
+    },
+    "taxId": "VN987654321",
+    "currency": "USD",
+    "id": "2a7bc265-639b-41f5-9633-132c2d954540",
+    "createdAt": "2025-08-08T05:42:47.257Z",
+    "updatedAt": "2025-08-08T05:42:47.257Z"
+  }
+]

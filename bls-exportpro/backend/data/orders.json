@@ -1,0 +1,65 @@
+[
+  {
+    "orderNumber": "ORD-2025-00001",
+    "customerId": "0ebba03e-cc98-41c0-98ef-a97c01be28ca",
+    "orderDate": "2025-08-08T05:42:47.323Z",
+    "deliveryDate": "2025-09-07T05:42:47.258Z",
+    "status": "draft",
+    "items": [
+      {
+        "productId": "a97721f6-ecb7-4f2b-8d22-af280f46838c",
+        "quantity": 1000,
+        "unitPrice": 0.05,
+        "batchNumber": "PAR2024001",
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "totalPrice": 50
+      },
+      {
+        "productId": "0ed79fd1-3e60-452b-b4e2-8b98457c5087",
+        "quantity": 500,
+        "unitPrice": 0.08,
+        "batchNumber": "AMX2024001",
+        "expiryDate": "2026-06-30T00:00:00.000Z",
+        "totalPrice": 40
+      }
+    ],
+    "subtotal": 90,
+    "igst": 0,
+    "drawback": 1.08,
+    "rodtep": 0.63,
+    "totalAmount": 88.29,
+    "currency": "USD",
+    "shippingMarks": "CAMBODIA PHARMA LTD\nPHNOM PENH\nFRAGILE - HANDLE WITH CARE",
+    "specialInstructions": "Keep in cool and dry place",
+    "id": "cb1c5e16-910a-4b47-89a8-854357176d09",
+    "createdAt": "2025-08-08T05:42:47.323Z",
+    "updatedAt": "2025-08-08T05:42:47.323Z"
+  },
+  {
+    "orderNumber": "ORD-2025-00002",
+    "customerId": "0ebba03e-cc98-41c0-98ef-a97c01be28ca",
+    "orderDate": "2025-08-08T05:48:55.280Z",
+    "status": "draft",
+    "items": [
+      {
+        "productId": "a97721f6-ecb7-4f2b-8d22-af280f46838c",
+        "quantity": 2000,
+        "unitPrice": 0.05,
+        "batchNumber": "PAR2024002",
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "totalPrice": 100
+      }
+    ],
+    "subtotal": 100,
+    "igst": 0,
+    "drawback": 1.2,
+    "rodtep": 0.7,
+    "totalAmount": 98.1,
+    "currency": "USD",
+    "shippingMarks": "URGENT DELIVERY",
+    "specialInstructions": "Temperature controlled storage required",
+    "id": "074ea791-d748-4956-a56e-f89b3a028d7d",
+    "createdAt": "2025-08-08T05:48:55.280Z",
+    "updatedAt": "2025-08-08T05:48:55.280Z"
+  }
+]

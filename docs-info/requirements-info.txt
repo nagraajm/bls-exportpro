@@ -1,0 +1,47 @@
+Initial Requirements:
+
+
+Scope of work:
+
+1. Invoicing for export documentation
+2. Preparation of Packing list
+3. Regulatory department related reporting and monitoring system
+4. Inventory management
+
+System flow in detail
+
+1. Invoicing & Packing List
+
+a. Order Processing – It contains most of the information leaving Batch coding.
+b. Invoicing starts from Order processing. Booking the order received from our customer, recording into the system. Invoice contents all information mentioned in order
+c. Packing List - Each shipper quantity, weight (Gross weight, Net weight)& batch coding. We receive from manufacturing site. At the time of booking order manufacturing site is decided
+d. Purchase order issuance
+
+2. Regulatory related – Tracking of product registration with the Ministry of Health, the authority of the county where we are intending to register our product.
+3. Inventory management – In most cases we are supplying paper packing material (Cartons and Pack Insert) to the manufacturing site and some cases API too.
+
+Definitions
+
+1. Product constitution. Brand Name & Generic name. For better understanding DOLO 650 is Brand name and “Paracetamol 650mg Tablets”. There are few more specification of Tablets which will be explained at the later stage
+2. Batch Coding – Batch No, Manufacturing Date, Expiry Date
+3. Carton – Blister of 3 or 10 finally packed in a box with pack insert, we say carton and pack insert is also known as leaflet.
+
+MIS
+All MIS reports are related to the above, draft of reports will be provide
+
+We will share you flowing towards draft
+
+1. Order we receive from our customer
+2. Our invoice &  Packing List
+3. Purchase Order
+4. Domestic supply invoice (for carton, pack insert and API)
+5. API – Active Pharma Ingredient i.e in case of Dolo 650, Paracetamol is AP
+6. Regulatory department master report sheet, currently updated in Excell
+
+Followup details shared:
+1. Proforma Invoice
+2. Pre-shipment Invoice and packing list
+3. Post-shipment Invoice and packing list
+4. MIS related to export system
+5. Purchase order issuance (finished product & Packing material & or API supplies
+6. Regulatory department MIS
