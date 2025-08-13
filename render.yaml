@@ -1,0 +1,53 @@
+services:
+  # Backend API Service
+  - type: web
+    name: bls-exportpro-backend
+    env: node
+    plan: starter
+    buildCommand: cd bls-exportpro/backend && npm install && npm run build
+    startCommand: cd bls-exportpro/backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: API_PREFIX
+        value: /api
+      - key: DATABASE_URL
+        value: sqlite:///data/database.sqlite
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://bls-exportpro-frontend.onrender.com
+    disk:
+      name: data
+      mountPath: /opt/render/project/src/bls-exportpro/backend/data
+      sizeGB: 1
+
+  # Frontend Service
+  - type: web
+    name: bls-exportpro-frontend
+    env: static
+    buildCommand: cd bls-exportpro/frontend && npm install && npm run build
+    staticPublishPath: bls-exportpro/frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://bls-exportpro-backend.onrender.com/api
+      - key: VITE_APP_NAME
+        value: BLS ExportPro
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+
+  # Database Service (if needed)
+  - type: redis
+    name: bls-exportpro-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru

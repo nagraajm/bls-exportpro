@@ -1,239 +1,145 @@
-# BLS ExportPro Deployment Guide
+# BLS ExportPro - Render Deployment Guide
 
-## Server Details
-- IP: 95.217.220.97
-- Application URL: http://95.217.220.97
-- API URL: http://95.217.220.97:5001/api
+## 🚀 Quick Deployment
 
-## Manual Deployment Steps
+### Option 1: Blueprint Deployment (Recommended)
+1. Fork this repository to your GitHub account
+2. Go to [Render Dashboard](https://dashboard.render.com)
+3. Click "New +" → "Blueprint"
+4. Connect your GitHub repository
+5. Render will automatically detect the `render.yaml` file
+6. Click "Apply" to deploy all services
 
-### 1. Connect to your server
+### Option 2: Manual Deployment
+
+#### Backend Deployment
+1. Create a new **Web Service** in Render
+2. Connect your GitHub repository
+3. Configure the service:
+   - **Name**: `bls-exportpro-backend`
+   - **Environment**: `Node`
+   - **Build Command**: `cd bls-exportpro/backend && npm install && npm run build`
+   - **Start Command**: `cd bls-exportpro/backend && npm start`
+   - **Root Directory**: `bls-exportpro/backend`
+
+#### Frontend Deployment
+1. Create a new **Static Site** in Render
+2. Connect your GitHub repository
+3. Configure the service:
+   - **Name**: `bls-exportpro-frontend`
+   - **Build Command**: `cd bls-exportpro/frontend && npm install && npm run build`
+   - **Publish Directory**: `bls-exportpro/frontend/dist`
+   - **Root Directory**: `bls-exportpro/frontend`
+
+## 🔧 Environment Variables
+
+### Backend Environment Variables
 ```bash
-ssh -i ~/nagaraj-mac-m1 root@95.217.220.97
-```
-
-If the above doesn't work, make sure your public key is added to the server:
-```bash
-# On your local machine, copy your public key:
-cat ~/nagaraj-mac-m1.pub
-
-# Then add it to the server's ~/.ssh/authorized_keys file
-```
-
-### 2. Once connected to the server, run these commands:
-
-#### Install System Dependencies
-```bash
-# Update system
-apt-get update -y
-apt-get upgrade -y
-
-# Install Node.js 20.x
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs
-
-# Install Git, Nginx, and build tools
-apt-get install -y git nginx build-essential
-
-# Install PM2 globally
-npm install -g pm2
-```
-
-#### Clone and Setup the Application
-```bash
-# Create application directory
-mkdir -p /var/www
-cd /var/www
-
-# Clone the repository
-git clone https://github.com/nagraajm/bls-exportpro.git
-cd bls-exportpro
-```
-
-#### Setup Backend
-```bash
-# Navigate to backend
-cd bls-exportpro/backend
-
-# Install dependencies
-npm install
-
-# Build the backend
-npm run build
-
-# Create and configure .env file
-cp .env.example .env
-nano .env
-```
-
-Update the .env file with:
-```
-PORT=5001
 NODE_ENV=production
-CORS_ORIGIN=http://95.217.220.97
-JWT_SECRET=your-secure-secret-key-here
+PORT=5001
 API_PREFIX=/api
-UPLOAD_DIR=./uploads
-DATA_DIR=./data
-CURRENCY_API_KEY=your-api-key
+DATABASE_URL=sqlite:///data/database.sqlite
+JWT_SECRET=your-super-secret-jwt-key
+CORS_ORIGIN=https://your-frontend-url.onrender.com
 ```
 
-#### Setup Frontend
+### Frontend Environment Variables
 ```bash
-# Navigate to frontend
-cd ../frontend
-
-# Update the API URL in src/services/api.ts
-sed -i "s|http://localhost:5001|http://95.217.220.97:5001|g" src/services/api.ts
-
-# Install dependencies
-npm install
-
-# Build the frontend
-npm run build
+VITE_API_BASE_URL=https://your-backend-url.onrender.com/api
+VITE_APP_NAME=BLS ExportPro
 ```
 
-#### Start Backend with PM2
+## 📁 File Structure
+```
+bls-exportpro/
+├── backend/
+│   ├── src/
+│   ├── package.json
+│   ├── build.sh
+│   └── dist/
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   ├── build.sh
+│   └── dist/
+├── render.yaml
+└── DEPLOYMENT_GUIDE.md
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Build Failures**
+   - Check Node.js version compatibility
+   - Ensure all dependencies are in package.json
+   - Verify TypeScript compilation
+
+2. **Database Issues**
+   - SQLite database is automatically created
+   - Check file permissions for data directory
+   - Ensure disk space is available
+
+3. **CORS Errors**
+   - Update CORS_ORIGIN in backend environment variables
+   - Ensure frontend URL is correct
+
+4. **API Connection Issues**
+   - Verify VITE_API_BASE_URL in frontend
+   - Check backend service is running
+   - Ensure API_PREFIX is correctly set
+
+### Debug Commands
 ```bash
-# Go back to backend directory
-cd ../backend
+# Check backend logs
+render logs bls-exportpro-backend
 
-# Start the backend
-pm2 start dist/index.js --name bls-backend
+# Check frontend logs
+render logs bls-exportpro-frontend
 
-# Save PM2 configuration
-pm2 save
-pm2 startup systemd -u root --hp /root
+# Restart services
+render restart bls-exportpro-backend
+render restart bls-exportpro-frontend
 ```
 
-#### Configure Nginx
-```bash
-# Create Nginx configuration
-nano /etc/nginx/sites-available/bls-exportpro
-```
+## 🔐 Security Considerations
 
-Add this configuration:
-```nginx
-server {
-    listen 80;
-    server_name 95.217.220.97;
+1. **JWT Secret**: Generate a strong JWT secret
+2. **CORS**: Configure CORS properly for production
+3. **Rate Limiting**: Implement rate limiting for API endpoints
+4. **HTTPS**: Render provides HTTPS by default
 
-    # Frontend
-    location / {
-        root /var/www/bls-exportpro/bls-exportpro/frontend/dist;
-        try_files $uri $uri/ /index.html;
-    }
+## 📊 Monitoring
 
-    # Backend API
-    location /api {
-        proxy_pass http://localhost:5001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+- Use Render's built-in monitoring
+- Check application logs regularly
+- Monitor database performance
+- Set up alerts for service failures
 
-    # Upload files
-    location /uploads {
-        alias /var/www/bls-exportpro/bls-exportpro/backend/uploads;
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-}
-```
+## 🔄 Updates
 
-Enable the site:
-```bash
-# Enable the site
-ln -s /etc/nginx/sites-available/bls-exportpro /etc/nginx/sites-enabled/
+To update your deployment:
+1. Push changes to your GitHub repository
+2. Render will automatically rebuild and deploy
+3. Monitor the deployment logs for any issues
 
-# Remove default site
-rm -f /etc/nginx/sites-enabled/default
+## 📞 Support
 
-# Test configuration
-nginx -t
+If you encounter issues:
+1. Check Render's documentation
+2. Review application logs
+3. Verify environment variables
+4. Test locally before deploying
 
-# Restart Nginx
-systemctl restart nginx
-```
+## 🎯 Post-Deployment Checklist
 
-#### Configure Firewall
-```bash
-# Allow necessary ports
-ufw allow 22/tcp
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw --force enable
-```
-
-### 3. Seed Initial Data (Optional)
-```bash
-cd /var/www/bls-exportpro/bls-exportpro/backend
-npm run seed
-```
-
-### 4. Check Services
-```bash
-# Check PM2 status
-pm2 status
-
-# Check Nginx status
-systemctl status nginx
-
-# View backend logs
-pm2 logs bls-backend
-```
-
-## Access the Application
-
-- Frontend: http://95.217.220.97
-- Backend API: http://95.217.220.97:5001/api
-- Health Check: http://95.217.220.97:5001/health
-
-## Default Login Credentials
-- Email: admin@blspharma.com
-- Password: admin123
-
-## Troubleshooting
-
-### If backend fails to start:
-```bash
-# Check logs
-pm2 logs bls-backend
-
-# Restart backend
-pm2 restart bls-backend
-```
-
-### If frontend shows connection errors:
-1. Check if backend is running: `pm2 status`
-2. Check Nginx configuration: `nginx -t`
-3. Check firewall: `ufw status`
-
-### To update the application:
-```bash
-cd /var/www/bls-exportpro
-git pull origin main
-
-# Rebuild backend
-cd bls-exportpro/backend
-npm install
-npm run build
-pm2 restart bls-backend
-
-# Rebuild frontend
-cd ../frontend
-npm install
-npm run build
-```
-
-## SSL Certificate (Optional)
-To add HTTPS support:
-```bash
-apt-get install -y certbot python3-certbot-nginx
-certbot --nginx -d your-domain.com
-```
+- [ ] Backend service is running
+- [ ] Frontend is accessible
+- [ ] API endpoints are working
+- [ ] Database is initialized
+- [ ] File uploads work
+- [ ] Excel import/export functions
+- [ ] Authentication works
+- [ ] CORS is configured correctly
+- [ ] Environment variables are set
+- [ ] SSL certificate is active
