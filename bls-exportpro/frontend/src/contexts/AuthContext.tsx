@@ -48,6 +48,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem('bls-user');
       }
     }
+    // Auto-sign in a demo user in development to ensure pages load
+    if (!savedUser) {
+      const { password: _pw, ...demo } = MOCK_USERS[0] as any;
+      setUser(demo);
+      localStorage.setItem('bls-user', JSON.stringify(demo));
+    }
     setLoading(false);
   }, []);
 

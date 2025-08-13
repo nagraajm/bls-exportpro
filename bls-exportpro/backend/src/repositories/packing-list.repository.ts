@@ -3,7 +3,8 @@ import { PackingList } from '../../../shared/types.ts';
 
 export class PackingListRepository extends BaseRepository<PackingList> {
   constructor() {
-    super('packingLists');
+    // SQLite table name is snake_case
+    super('packing_lists');
   }
   
   async findByOrderId(orderId: string): Promise<PackingList[]> {

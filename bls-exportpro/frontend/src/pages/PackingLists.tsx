@@ -76,11 +76,47 @@ const PackingLists: React.FC = () => {
 
   const fetchPackingLists = async () => {
     try {
-      const data = await api.get<PackingList[]>('/packing-list');
-      setPackingLists(data);
+      const resp = await api.get<any>('/invoice-generator/packing-lists');
+      const rawList: any[] = Array.isArray(resp) ? resp : (resp?.packingLists ?? resp?.data ?? []);
+      const normalized: PackingList[] = rawList.map((pl: any) => ({
+        id: pl.id,
+        packingListNumber: pl.packingListNumber ?? pl.packing_list_number ?? 'PL',
+        orderId: pl.orderId ?? pl.order_id,
+        orderNumber: pl.orderNumber ?? pl.order_number ?? '—',
+        invoiceId: pl.invoiceId ?? pl.invoice_id,
+        invoiceNumber: pl.invoiceNumber ?? pl.invoice_number ?? '—',
+        customerName: pl.customerName ?? pl.customer_name ?? '—',
+        customerCountry: pl.customerCountry ?? pl.customer_country ?? '—',
+        shippingDate: (pl.shippingDate ?? pl.shipping_date ?? pl.createdAt ?? pl.created_at ?? new Date()).toString().split('T')[0],
+        manufacturingSite: pl.manufacturingSite ?? pl.manufacturing_site ?? 'Site A - India',
+        status: pl.status ?? 'confirmed',
+        totalShippers: pl.totalShippers ?? pl.total_shippers ?? pl.totalPackages ?? 0,
+        totalGrossWeight: pl.totalGrossWeight ?? pl.total_gross_weight ?? 0,
+        totalNetWeight: pl.totalNetWeight ?? pl.total_net_weight ?? 0,
+        items: (pl.items ?? []).map((it: any) => ({
+          productId: it.productId ?? it.product_id,
+          productName: it.productName ?? it.product?.brandName ?? it.brand_name ?? 'Item',
+          brandName: it.brandName ?? it.product?.brandName ?? it.brand_name ?? '—',
+          genericName: it.genericName ?? it.product?.genericName ?? it.generic_name ?? '—',
+          strength: it.strength ?? it.product?.strength ?? '—',
+          packSize: it.packSize ?? it.product?.unit_pack ?? it.unit_pack ?? '—',
+          batches: (it.batches ?? []).map((b: any) => ({
+            batchNumber: b.batchNumber ?? b.batch_number ?? '—',
+            manufacturingDate: (b.manufacturingDate ?? b.mfg_date ?? new Date()).toString().split('T')[0],
+            expiryDate: (b.expiryDate ?? b.exp_date ?? new Date()).toString().split('T')[0],
+            quantity: b.quantity ?? 0,
+          })),
+          totalQuantity: it.totalQuantity ?? it.quantity ?? 0,
+          shipperQuantity: it.shipperQuantity ?? it.packagesCount ?? it.packages_count ?? 1,
+          grossWeight: it.grossWeight ?? it.gross_weight ?? 0,
+          netWeight: it.netWeight ?? it.net_weight ?? 0,
+        }))
+      }));
+
+      setPackingLists(normalized);
     } catch (error) {
       console.error('Error fetching packing lists:', error);
-      // Mock data for demonstration
+      // Fallback to mock data if API fails
       setPackingLists([
         {
           id: '1',
@@ -100,29 +136,19 @@ const PackingLists: React.FC = () => {
           items: [
             {
               productId: '1',
-              productName: 'DOLO 650',
-              brandName: 'DOLO 650',
-              genericName: 'Paracetamol',
-              strength: '650mg',
-              packSize: '10x10 Blisters',
+              productName: 'Item 1',
+              brandName: 'Brand A',
+              genericName: 'Generic 1',
+              strength: '100mg',
+              packSize: '100ml',
               batches: [
-                {
-                  batchNumber: 'DL24001',
-                  manufacturingDate: '2024-01-15',
-                  expiryDate: '2026-01-14',
-                  quantity: 5000
-                },
-                {
-                  batchNumber: 'DL24002',
-                  manufacturingDate: '2024-02-10',
-                  expiryDate: '2026-02-09',
-                  quantity: 3000
-                }
+                { batchNumber: 'BATCH-001', manufacturingDate: '2023-01-01', expiryDate: '2024-01-01', quantity: 100 },
+                { batchNumber: 'BATCH-002', manufacturingDate: '2023-02-01', expiryDate: '2024-02-01', quantity: 50 }
               ],
-              totalQuantity: 8000,
-              shipperQuantity: 30,
-              grossWeight: 750,
-              netWeight: 720
+              totalQuantity: 150,
+              shipperQuantity: 10,
+              grossWeight: 25.5,
+              netWeight: 24,
             }
           ]
         }
@@ -429,8 +455,8 @@ const PackingLists: React.FC = () => {
                       <div key={index} className="bg-white/5 rounded-lg p-4">
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <p className="text-white font-medium">{item.brandName}</p>
-                            <p className="text-gray-400 text-sm">{item.genericName} - {item.strength}</p>
+                            <p className="text-white font-medium">{item.productName}</p>
+                            <p className="text-gray-400 text-sm">{item.brandName} - {item.genericName}</p>
                             <p className="text-gray-400 text-sm">Pack Size: {item.packSize}</p>
                           </div>
                           <div className="text-right">

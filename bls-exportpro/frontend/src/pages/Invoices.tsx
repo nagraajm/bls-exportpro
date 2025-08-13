@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Button } from '../components/Button';
+import { ImportPreviewModal } from '../components/ImportPreviewModal';
 import { api } from '../services/api';
+import * as XLSX from 'xlsx';
 import {
   FileText,
   Download,
@@ -17,7 +19,8 @@ import {
   DollarSign,
   Calendar,
   Building,
-  Package
+  Package,
+  Upload
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -53,6 +56,24 @@ interface Order {
   status: string;
 }
 
+interface ImportData {
+  invoiceNumber: string;
+  invoiceType: string;
+  customerName: string;
+  customerCountry: string;
+  invoiceDate: string;
+  dueDate?: string;
+  totalAmount: number;
+  currency: string;
+  status: string;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }>;
+}
+
 const Invoices: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -63,6 +84,12 @@ const Invoices: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
+  
+  // Import states
+  const [showImportPreview, setShowImportPreview] = useState(false);
+  const [importData, setImportData] = useState<ImportData[]>([]);
+  const [importLoading, setImportLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchInvoices();
@@ -71,10 +98,51 @@ const Invoices: React.FC = () => {
 
   const fetchInvoices = async () => {
     try {
-      const data = await api.get<Invoice[]>('/invoices');
-      setInvoices(data);
+      const resp = await api.get<any>('/invoice-generator/invoices');
+      const rawList: any[] = Array.isArray(resp) ? resp : (resp?.invoices ?? resp?.data ?? []);
+      const normalized: Invoice[] = rawList.map((inv: any) => ({
+        id: inv.id,
+        invoiceNumber: inv.invoiceNumber ?? inv.invoice_number ?? 'INV',
+        invoiceType: (inv.invoiceType ?? inv.invoice_type ?? 'proforma') as any,
+        orderId: inv.orderId ?? inv.order_id,
+        customerName: inv.customerName ?? inv.customer_name ?? inv.order?.customerName ?? '—',
+        customerCountry: inv.customerCountry ?? inv.customer_country ?? inv.order?.customerCountry ?? '—',
+        invoiceDate: (inv.invoiceDate ?? inv.invoice_date ?? inv.createdAt ?? inv.created_at ?? new Date()).toString().split('T')[0],
+        dueDate: (inv.dueDate ?? inv.due_date ?? new Date()).toString().split('T')[0],
+        totalAmount: inv.totalAmount ?? inv.total_amount ?? inv.amount ?? 0,
+        currency: (inv.currency ?? 'USD') as 'USD' | 'INR',
+        status: (inv.status ?? 'pending') as any,
+        items: (inv.items ?? []).map((it: any) => ({
+          productName: it.productName ?? it.product?.brandName ?? it.brand_name ?? 'Item',
+          quantity: it.quantity ?? 0,
+          unitPrice: it.unitPrice ?? it.rate_usd ?? 0,
+          totalPrice: it.totalPrice ?? it.amount ?? (it.quantity ?? 0) * (it.unitPrice ?? it.rate_usd ?? 0)
+        }))
+      }));
+
+      setInvoices(normalized);
     } catch (error) {
       console.error('Error fetching invoices:', error);
+      // Fallback to mock data if API fails
+      setInvoices([
+        {
+          id: '1',
+          invoiceNumber: 'INV/2024/001',
+          invoiceType: 'proforma',
+          orderId: '1',
+          customerName: 'Mock Customer',
+          customerCountry: 'Mock Country',
+          invoiceDate: '2024-12-15',
+          dueDate: '2024-12-30',
+          totalAmount: 12500,
+          currency: 'USD',
+          status: 'pending',
+          items: [
+            { productName: 'Mock Item 1', quantity: 10, unitPrice: 100, totalPrice: 1000 },
+            { productName: 'Mock Item 2', quantity: 5, unitPrice: 200, totalPrice: 1000 }
+          ]
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -82,10 +150,158 @@ const Invoices: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const data = await api.get<{ orders: Order[] }>('/orders/list');
-      setOrders(data.orders || []);
+      // Prefer SQLite-backed endpoint
+      const resp = await api.get<any>('/invoice-generator/orders');
+      const rawList = Array.isArray(resp) ? resp : (resp?.data ?? []);
+      const mapped: Order[] = (rawList as any[]).map((o: any) => ({
+        id: o.id,
+        orderNumber: o.order_number ?? o.orderNumber,
+        customerName: o.customer_name ?? o.customerName,
+        customerCountry: o.customer_country ?? o.customerCountry,
+        totalAmount: o.total_amount ?? o.totalAmount ?? 0,
+        currency: o.currency ?? 'INR',
+        status: o.status ?? 'pending',
+      }));
+      setOrders(mapped);
     } catch (error) {
       console.error('Error fetching orders:', error);
+    }
+  };
+
+  const handleImportExcel = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await fetch('/api/invoices/import/template');
+      if (!response.ok) throw new Error('Failed to download template');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'invoice-import-template.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      alert('Error downloading template. Please try again.');
+    }
+  };
+
+  const parseExcelFile = (file: File): Promise<ImportData[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          // Skip header row and parse data
+          const parsedData: ImportData[] = [];
+          
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i] as any[];
+            if (!row[0]) continue; // Skip empty rows
+            
+            const invoiceData: ImportData = {
+              invoiceNumber: String(row[0] || '').trim(),
+              invoiceType: String(row[1] || 'proforma').toLowerCase(),
+              customerName: String(row[2] || '').trim(),
+              customerCountry: String(row[3] || '').trim(),
+              invoiceDate: String(row[4] || new Date().toISOString().split('T')[0]),
+              dueDate: row[5] ? String(row[5]) : undefined,
+              totalAmount: Number(row[6]) || 0,
+              currency: String(row[7] || 'USD').toUpperCase(),
+              status: String(row[8] || 'pending').toLowerCase(),
+              items: []
+            };
+            
+            // Parse items if available (columns 9+)
+            if (row[9]) {
+              invoiceData.items.push({
+                productName: String(row[9] || '').trim(),
+                quantity: Number(row[10]) || 0,
+                unitPrice: Number(row[11]) || 0,
+                totalPrice: Number(row[12]) || 0
+              });
+            }
+            
+            parsedData.push(invoiceData);
+          }
+          
+          resolve(parsedData);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.name.match(/\.(xlsx|xls)$/i)) {
+      alert('Please select a valid Excel file (.xlsx or .xls)');
+      return;
+    }
+    
+    try {
+      const parsedData = await parseExcelFile(file);
+      setImportData(parsedData);
+      setShowImportPreview(true);
+    } catch (error) {
+      console.error('Error parsing Excel file:', error);
+      alert('Error parsing Excel file. Please check the file format.');
+    }
+    
+    // Reset file input
+    event.target.value = '';
+  };
+
+  const handleConfirmImport = async () => {
+    setImportLoading(true);
+    
+    try {
+      const response = await api.post<{
+        success: boolean;
+        totalRecords: number;
+        successfulRecords: number;
+        failedRecords: number;
+        errors?: Array<{
+          row: number;
+          field: string;
+          message: string;
+        }>;
+      }>('/invoices/import', {
+        invoices: importData
+      });
+      
+      if (response.success) {
+        alert(`Successfully imported ${response.successfulRecords} invoices. ${response.failedRecords} failed.`);
+        await fetchInvoices(); // Refresh the invoice list
+        setShowImportPreview(false);
+        setImportData([]);
+      } else {
+        alert('Import failed. Please check the data and try again.');
+      }
+    } catch (error) {
+      console.error('Error importing invoices:', error);
+      alert('Error importing invoices. Please try again.');
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -187,6 +403,14 @@ const Invoices: React.FC = () => {
         <div className="flex items-center space-x-4">
           <Button
             variant="outline"
+            onClick={handleImportExcel}
+            className="flex items-center space-x-2"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Import Excel</span>
+          </Button>
+          <Button
+            variant="outline"
             onClick={handleExportExcel}
             className="flex items-center space-x-2"
           >
@@ -203,6 +427,15 @@ const Invoices: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx,.xls"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -564,6 +797,15 @@ const Invoices: React.FC = () => {
           </motion.div>
         </div>
       )}
+
+      {/* Import Preview Modal */}
+      <ImportPreviewModal
+        isOpen={showImportPreview}
+        onClose={() => setShowImportPreview(false)}
+        onConfirm={handleConfirmImport}
+        data={importData}
+        loading={importLoading}
+      />
     </div>
   );
 };

@@ -28,7 +28,7 @@ import excelImportRoutes from './routes/excel-import.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5001;
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 app.use(helmet());

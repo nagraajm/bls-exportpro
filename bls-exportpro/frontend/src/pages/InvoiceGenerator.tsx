@@ -55,7 +55,7 @@ export const InvoiceGenerator: React.FC = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/invoice-generator/orders');
+      const response = await fetch('/api/invoice-generator/orders');
       const data = await response.json();
       if (data.success) {
         setOrders(data.data);
@@ -72,7 +72,7 @@ export const InvoiceGenerator: React.FC = () => {
   const fetchOrderDetails = async (orderId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/invoice-generator/orders/${orderId}`);
+      const response = await fetch(`/api/invoice-generator/orders/${orderId}`);
       const data = await response.json();
       if (data.success) {
         setSelectedOrder(data.data);
@@ -89,7 +89,7 @@ export const InvoiceGenerator: React.FC = () => {
   const generateInvoice = async (orderId: string, type: 'PROFORMA INVOICE' | 'INVOICE') => {
     setGenerating(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/invoice-generator/orders/${orderId}/generate`, {
+      const response = await fetch(`/api/invoice-generator/orders/${orderId}/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export const InvoiceGenerator: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         // Open the PDF in a new tab
-        window.open(`http://localhost:5001${data.data.downloadUrl}`, '_blank');
+        window.open(`${data.data.downloadUrl}`, '_blank');
       } else {
         setError('Failed to generate invoice');
       }

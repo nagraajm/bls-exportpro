@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import asyncHandler from 'express-async-handler';
 import { invoiceService } from '../services/invoice.service';
-import { GenerateInvoiceInput, GetInvoiceInput, ListInvoicesInput, UpdateInvoiceInput } from '../schemas/invoice.schema';
+import { GenerateInvoiceInput, GetInvoiceInput, ListInvoicesInput, UpdateInvoiceInput, ImportInvoicesInput } from '../schemas/invoice.schema';
 
 export const generateInvoice = asyncHandler(async (
   req: Request<{}, {}, GenerateInvoiceInput['body']>,
@@ -16,6 +16,19 @@ export const generateInvoice = asyncHandler(async (
   res.status(201).json({
     status: 'success',
     data: invoice,
+  });
+});
+
+export const importInvoices = asyncHandler(async (
+  req: Request<{}, {}, ImportInvoicesInput['body']>,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = await invoiceService.importInvoices(req.body.invoices);
+  
+  res.status(200).json({
+    status: 'success',
+    data: result,
   });
 });
 

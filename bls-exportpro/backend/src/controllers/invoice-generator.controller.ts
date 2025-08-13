@@ -42,6 +42,42 @@ export class InvoiceGeneratorController {
     }
   }
 
+  async listInvoices(req: Request, res: Response) {
+    try {
+      const db = await getDatabase();
+      const invoices = await db.all(`
+        SELECT i.*, o.order_number, o.customer_id, c.company_name AS customer_name, c.country AS customer_country
+        FROM invoices i
+        LEFT JOIN orders o ON i.order_id = o.id
+        LEFT JOIN customers c ON o.customer_id = c.id
+        ORDER BY i.created_at DESC
+      `);
+
+      res.json({ success: true, data: invoices });
+    } catch (error) {
+      console.error('List invoices error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch invoices' });
+    }
+  }
+
+  async listPackingLists(req: Request, res: Response) {
+    try {
+      const db = await getDatabase();
+      const lists = await db.all(`
+        SELECT pl.*, i.invoice_number, o.order_number, c.company_name AS customer_name, c.country AS customer_country
+        FROM packing_lists pl
+        LEFT JOIN invoices i ON pl.invoice_id = i.id
+        LEFT JOIN orders o ON i.order_id = o.id
+        LEFT JOIN customers c ON o.customer_id = c.id
+        ORDER BY pl.created_at DESC
+      `);
+
+      res.json({ success: true, data: lists });
+    } catch (error) {
+      console.error('List packing lists error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch packing lists' });
+    }
+  }
   async downloadInvoice(req: Request, res: Response) {
     try {
       const { invoiceId } = req.params;

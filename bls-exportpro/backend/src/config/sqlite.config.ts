@@ -95,16 +95,16 @@ async function createTables() {
       invoice_number TEXT UNIQUE,
       invoice_date DATE,
       invoice_type TEXT, -- 'proforma', 'commercial'
-      pfi_number TEXT,
+      due_date DATE,
+      subtotal REAL,
+      igst REAL DEFAULT 0,
+      drawback REAL DEFAULT 0,
+      rodtep REAL DEFAULT 0,
       total_amount REAL,
       currency TEXT DEFAULT 'USD',
-      bill_of_lading TEXT,
-      vessel_voyage TEXT,
-      port_of_loading TEXT,
-      port_of_discharge TEXT,
-      place_of_delivery TEXT,
-      payment_terms TEXT,
+      status TEXT DEFAULT 'pending',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (order_id) REFERENCES orders(id)
     )
   `);
@@ -113,11 +113,18 @@ async function createTables() {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS packing_lists (
       id TEXT PRIMARY KEY,
+      packing_list_number TEXT UNIQUE,
+      order_id TEXT,
       invoice_id TEXT,
-      total_cartons INTEGER,
+      shipping_date DATE,
+      manufacturing_site TEXT,
+      status TEXT DEFAULT 'pending',
+      total_shippers INTEGER,
       total_gross_weight REAL,
       total_net_weight REAL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (order_id) REFERENCES orders(id),
       FOREIGN KEY (invoice_id) REFERENCES invoices(id)
     )
   `);
@@ -128,14 +135,12 @@ async function createTables() {
       id TEXT PRIMARY KEY,
       packing_list_id TEXT,
       product_id TEXT,
-      batch_number TEXT,
-      mfg_date DATE,
-      exp_date DATE,
-      cartons_quantity INTEGER,
+      quantity INTEGER,
+      shipper_quantity INTEGER,
       gross_weight REAL,
       net_weight REAL,
-      quantity INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (packing_list_id) REFERENCES packing_lists(id),
       FOREIGN KEY (product_id) REFERENCES products(id)
     )

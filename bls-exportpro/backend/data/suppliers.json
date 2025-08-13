@@ -32,5 +32,39 @@
     "id": "ee70b395-cf80-4ed4-a2a8-7f566bd07ffc",
     "createdAt": "2025-08-08T05:42:47.258Z",
     "updatedAt": "2025-08-08T05:42:47.258Z"
+  },
+  {
+    "companyName": "Cipla Ltd",
+    "contactPerson": "Rajesh Kumar",
+    "email": "rajesh@cipla.com",
+    "phone": "+91 22 1234 5678",
+    "address": {
+      "street": "Peninsula Business Park",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "country": "India",
+      "postalCode": "400013"
+    },
+    "taxId": "AAACI1207E",
+    "id": "ff0b1730-3ad2-454a-8865-bf70647a4b42",
+    "createdAt": "2025-08-13T06:54:36.688Z",
+    "updatedAt": "2025-08-13T06:54:36.688Z"
+  },
+  {
+    "companyName": "GSK India",
+    "contactPerson": "Priya Sharma",
+    "email": "priya@gsk.com",
+    "phone": "+91 22 2345 6789",
+    "address": {
+      "street": "Dr. Annie Besant Road",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "country": "India",
+      "postalCode": "400030"
+    },
+    "taxId": "AAACG0569C",
+    "id": "d8d331e4-5de4-4544-ba2f-1b7dadf170f1",
+    "createdAt": "2025-08-13T06:54:36.691Z",
+    "updatedAt": "2025-08-13T06:54:36.691Z"
   }
 ]

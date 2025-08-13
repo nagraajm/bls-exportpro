@@ -7,7 +7,9 @@ import {
   getInvoiceSchema,
   listInvoicesSchema,
   updateInvoiceSchema,
+  importInvoicesSchema,
 } from '../schemas/invoice.schema';
+import { generateInvoiceImportTemplate } from '../utils/excel-template-generator';
 
 const router = Router();
 
@@ -15,6 +17,27 @@ router.post(
   '/generate',
   validate(generateInvoiceSchema),
   invoiceController.generateInvoice
+);
+
+router.post(
+  '/import',
+  validate(importInvoicesSchema),
+  invoiceController.importInvoices
+);
+
+router.get(
+  '/import/template',
+  (req, res) => {
+    try {
+      const buffer = generateInvoiceImportTemplate();
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="invoice-import-template.xlsx"');
+      res.send(buffer);
+    } catch (error) {
+      console.error('Error generating template:', error);
+      res.status(500).json({ error: 'Failed to generate template' });
+    }
+  }
 );
 
 router.get(

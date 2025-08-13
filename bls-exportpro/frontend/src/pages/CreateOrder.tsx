@@ -54,8 +54,8 @@ export const CreateOrder: React.FC = () => {
     setLoading(true);
     try {
       const [productsRes, customersRes] = await Promise.all([
-        fetch('http://localhost:5001/api/order-creation/products'),
-        fetch('http://localhost:5001/api/order-creation/customers')
+        fetch('/api/order-creation/products'),
+        fetch('/api/order-creation/customers')
       ]);
 
       const productsData = await productsRes.json();
@@ -128,7 +128,7 @@ export const CreateOrder: React.FC = () => {
 
     setCreating(true);
     try {
-      const response = await fetch('http://localhost:5001/api/order-creation/create', {
+      const response = await fetch('/api/order-creation/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

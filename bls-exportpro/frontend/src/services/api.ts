@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:5001/api';
 
 export class ApiService {
   private async request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -11,10 +11,21 @@ export class ApiService {
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    const json = await response.json();
+
+    // Normalize common backend envelope { status/success, data, pagination }
+    if (json && typeof json === 'object') {
+      const hasData = Object.prototype.hasOwnProperty.call(json, 'data');
+      const isEnveloped = hasData || Object.prototype.hasOwnProperty.call(json, 'status') || Object.prototype.hasOwnProperty.call(json, 'success');
+      if (hasData && isEnveloped) {
+        return (json.data ?? json) as T;
+      }
+    }
+
+    return json as T;
   }
 
   get<T>(url: string): Promise<T> {

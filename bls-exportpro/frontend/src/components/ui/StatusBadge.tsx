@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../utils/cn';
 
 interface StatusBadgeProps {
-  status: 'active' | 'pending' | 'completed' | 'failed' | 'warning';
+  status: 'active' | 'pending' | 'completed' | 'failed' | 'warning' | 'inactive';
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
@@ -33,6 +33,11 @@ const statusStyles = {
     bg: 'bg-gradient-to-r from-yellow-400 to-amber-600',
     text: 'text-white',
     glow: 'shadow-yellow-500/50'
+  },
+  inactive: {
+    bg: 'bg-gradient-to-r from-gray-500 to-gray-700',
+    text: 'text-white',
+    glow: 'shadow-gray-500/50'
   }
 };
 
@@ -48,7 +53,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   size = 'md',
   animated = false 
 }) => {
-  const styles = statusStyles[status];
+  const styles = statusStyles[status] ?? statusStyles.pending;
   
   return (
     <span

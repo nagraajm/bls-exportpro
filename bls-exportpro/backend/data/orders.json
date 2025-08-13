@@ -61,5 +61,41 @@
     "id": "074ea791-d748-4956-a56e-f89b3a028d7d",
     "createdAt": "2025-08-08T05:48:55.280Z",
     "updatedAt": "2025-08-08T05:48:55.280Z"
+  },
+  {
+    "orderNumber": "ORD-2025-00003",
+    "customerId": "51a20090-832d-4723-af2c-ac1a5a9c2e2b",
+    "orderDate": "2025-08-13T06:54:37.070Z",
+    "deliveryDate": "2025-09-12T06:54:36.695Z",
+    "status": "draft",
+    "items": [
+      {
+        "productId": "a8e32eff-d57e-4478-8be0-1161ca84d9c1",
+        "quantity": 1000,
+        "unitPrice": 0.05,
+        "batchNumber": "PAR2024001",
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "totalPrice": 50
+      },
+      {
+        "productId": "812a2c91-3a8c-4665-8be5-c45ab5562314",
+        "quantity": 500,
+        "unitPrice": 0.08,
+        "batchNumber": "AMX2024001",
+        "expiryDate": "2026-06-30T00:00:00.000Z",
+        "totalPrice": 40
+      }
+    ],
+    "subtotal": 90,
+    "igst": 0,
+    "drawback": 1.08,
+    "rodtep": 0.63,
+    "totalAmount": 88.29,
+    "currency": "USD",
+    "shippingMarks": "CAMBODIA PHARMA LTD\nPHNOM PENH\nFRAGILE - HANDLE WITH CARE",
+    "specialInstructions": "Keep in cool and dry place",
+    "id": "9974b710-0865-4daf-a269-4d70fdae088b",
+    "createdAt": "2025-08-13T06:54:37.071Z",
+    "updatedAt": "2025-08-13T06:54:37.071Z"
   }
 ]

@@ -1,4 +1,4 @@
-import { db } from '../config/database';
+import { getDatabase } from '../config/sqlite.config';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface BaseEntity {
@@ -8,18 +8,23 @@ export interface BaseEntity {
 }
 
 export abstract class BaseRepository<T extends BaseEntity> {
-  constructor(protected collectionName: string) {}
+  constructor(protected tableName: string) {}
   
   async findAll(): Promise<T[]> {
-    return db.readJson<T>(this.collectionName);
+    const db = await getDatabase();
+    const result = await db.all(`SELECT * FROM ${this.tableName}`);
+    return result.map(this.mapRowToEntity);
   }
   
   async findById(id: string): Promise<T | null> {
-    return db.findById<T>(this.collectionName, id);
+    const db = await getDatabase();
+    const result = await db.get(`SELECT * FROM ${this.tableName} WHERE id = ?`, [id]);
+    return result ? this.mapRowToEntity(result) : null;
   }
   
   async find(predicate: (item: T) => boolean): Promise<T[]> {
-    return db.find<T>(this.collectionName, predicate);
+    const items = await this.findAll();
+    return items.filter(predicate);
   }
   
   async create(data: Omit<T, 'id' | 'createdAt' | 'updatedAt'>): Promise<T> {
@@ -31,7 +36,16 @@ export abstract class BaseRepository<T extends BaseEntity> {
       updatedAt: now,
     } as T;
     
-    await db.appendJson(this.collectionName, entity);
+    const db = await getDatabase();
+    const columns = Object.keys(entity).join(', ');
+    const placeholders = Object.keys(entity).map(() => '?').join(', ');
+    const values = Object.values(entity);
+    
+    await db.run(
+      `INSERT INTO ${this.tableName} (${columns}) VALUES (${placeholders})`,
+      values
+    );
+    
     return entity;
   }
   
@@ -41,11 +55,24 @@ export abstract class BaseRepository<T extends BaseEntity> {
       updatedAt: new Date(),
     };
     
-    return db.updateJson<T>(this.collectionName, id, updates as Partial<T>);
+    const db = await getDatabase();
+    const setClause = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+    const values = [...Object.values(updates), id];
+    
+    const result = await db.run(
+      `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`,
+      values
+    );
+    
+    if (!result || (result as any).changes === 0) return null;
+    
+    return this.findById(id);
   }
   
   async delete(id: string): Promise<boolean> {
-    return db.deleteJson<T>(this.collectionName, id);
+    const db = await getDatabase();
+    const result = await db.run(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
+    return ((result as any)?.changes ?? 0) > 0;
   }
   
   async findOne(predicate: (item: T) => boolean): Promise<T | null> {
@@ -80,5 +107,14 @@ export abstract class BaseRepository<T extends BaseEntity> {
     const data = items.slice(start, start + limit);
     
     return { data, total, page, totalPages };
+  }
+  
+  protected mapRowToEntity(row: any): T {
+    // Convert SQLite row to entity format
+    return {
+      ...row,
+      createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+      updatedAt: row.updated_at ? new Date(row.updated_at) : new Date(),
+    } as T;
   }
 }

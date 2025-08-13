@@ -227,6 +227,169 @@ async function seedDatabase() {
 
   console.log('Seeded sample order with items...');
 
+  // Seed invoices for orders
+  const invoices = [
+    {
+      id: uuidv4(),
+      invoiceNumber: 'INV-2025-001',
+      orderId: orders[0].id,
+      invoiceType: 'proforma',
+      invoiceDate: '2025-01-16',
+      dueDate: '2025-02-16',
+      subtotal: 38034.65,
+      igst: 0,
+      drawback: 0,
+      rodtep: 0,
+      totalAmount: 38034.65,
+      currency: 'INR',
+      status: 'pending'
+    },
+    {
+      id: uuidv4(),
+      invoiceNumber: 'INV-2025-002',
+      orderId: orders[1].id,
+      invoiceType: 'proforma',
+      invoiceDate: '2025-01-21',
+      dueDate: '2025-02-21',
+      subtotal: 125000.00,
+      igst: 0,
+      drawback: 0,
+      rodtep: 0,
+      totalAmount: 125000.00,
+      currency: 'INR',
+      status: 'pending'
+    },
+    {
+      id: uuidv4(),
+      invoiceNumber: 'INV-2025-003',
+      orderId: orders[2].id,
+      invoiceType: 'proforma',
+      invoiceDate: '2025-01-26',
+      dueDate: '2025-02-26',
+      subtotal: 85000.50,
+      igst: 0,
+      drawback: 0,
+      rodtep: 0,
+      totalAmount: 85000.50,
+      currency: 'INR',
+      status: 'pending'
+    }
+  ];
+
+  for (const invoice of invoices) {
+    await db.run(
+      `INSERT INTO invoices (id, invoice_number, order_id, invoice_type, invoice_date, due_date, subtotal, igst, drawback, rodtep, total_amount, currency, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      [invoice.id, invoice.invoiceNumber, invoice.orderId, invoice.invoiceType, invoice.invoiceDate, invoice.dueDate, invoice.subtotal, invoice.igst, invoice.drawback, invoice.rodtep, invoice.totalAmount, invoice.currency, invoice.status]
+    );
+  }
+
+  console.log(`Seeded ${invoices.length} invoices...`);
+
+  // Seed packing lists
+  const packingLists = [
+    {
+      id: uuidv4(),
+      packingListNumber: 'PL-2025-001',
+      orderId: orders[0].id,
+      invoiceId: invoices[0].id,
+      shippingDate: '2025-02-15',
+      manufacturingSite: 'Site A - India',
+      status: 'confirmed',
+      totalShippers: 15,
+      totalGrossWeight: 1250.5,
+      totalNetWeight: 1200.0
+    },
+    {
+      id: uuidv4(),
+      packingListNumber: 'PL-2025-002',
+      orderId: orders[1].id,
+      invoiceId: invoices[1].id,
+      shippingDate: '2025-02-20',
+      manufacturingSite: 'Site A - India',
+      status: 'pending',
+      totalShippers: 8,
+      totalGrossWeight: 850.0,
+      totalNetWeight: 800.0
+    },
+    {
+      id: uuidv4(),
+      packingListNumber: 'PL-2025-003',
+      orderId: orders[2].id,
+      invoiceId: invoices[2].id,
+      shippingDate: '2025-02-25',
+      manufacturingSite: 'Site A - India',
+      status: 'processing',
+      totalShippers: 12,
+      totalGrossWeight: 950.0,
+      totalNetWeight: 900.0
+    }
+  ];
+
+  for (const packingList of packingLists) {
+    await db.run(
+      `INSERT INTO packing_lists (id, packing_list_number, order_id, invoice_id, shipping_date, manufacturing_site, status, total_shippers, total_gross_weight, total_net_weight, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      [packingList.id, packingList.packingListNumber, packingList.orderId, packingList.invoiceId, packingList.shippingDate, packingList.manufacturingSite, packingList.status, packingList.totalShippers, packingList.totalGrossWeight, packingList.totalNetWeight]
+    );
+  }
+
+  console.log(`Seeded ${packingLists.length} packing lists...`);
+
+  // Seed packing list items
+  const packingListItems = [
+    // Packing List 1 items
+    {
+      packingListId: packingLists[0].id,
+      items: [
+        { product_index: 0, quantity: 9854, shipperQuantity: 5, grossWeight: 450.0, netWeight: 430.0 },
+        { product_index: 1, quantity: 1860, shipperQuantity: 3, grossWeight: 200.0, netWeight: 190.0 },
+        { product_index: 2, quantity: 1480, shipperQuantity: 2, grossWeight: 180.0, netWeight: 175.0 },
+        { product_index: 3, quantity: 16000, shipperQuantity: 3, grossWeight: 320.0, netWeight: 310.0 },
+        { product_index: 4, quantity: 6500, shipperQuantity: 1, grossWeight: 80.0, netWeight: 75.0 },
+        { product_index: 5, quantity: 1235, shipperQuantity: 1, grossWeight: 20.5, netWeight: 20.0 }
+      ]
+    },
+    // Packing List 2 items
+    {
+      packingListId: packingLists[1].id,
+      items: [
+        { product_index: 0, quantity: 15000, shipperQuantity: 4, grossWeight: 680.0, netWeight: 650.0 },
+        { product_index: 3, quantity: 25000, shipperQuantity: 3, grossWeight: 120.0, netWeight: 115.0 },
+        { product_index: 4, quantity: 10000, shipperQuantity: 1, grossWeight: 50.0, netWeight: 35.0 }
+      ]
+    },
+    // Packing List 3 items
+    {
+      packingListId: packingLists[2].id,
+      items: [
+        { product_index: 1, quantity: 5000, shipperQuantity: 2, grossWeight: 540.0, netWeight: 520.0 },
+        { product_index: 2, quantity: 8000, shipperQuantity: 2, grossWeight: 280.0, netWeight: 270.0 },
+        { product_index: 5, quantity: 2500, shipperQuantity: 8, grossWeight: 130.0, netWeight: 110.0 }
+      ]
+    }
+  ];
+
+  for (const packingListGroup of packingListItems) {
+    for (const item of packingListGroup.items) {
+      await db.run(
+        `INSERT INTO packing_list_items (id, packing_list_id, product_id, quantity, shipper_quantity, gross_weight, net_weight, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+        [
+          uuidv4(),
+          packingListGroup.packingListId,
+          products[item.product_index].id,
+          item.quantity,
+          item.shipperQuantity,
+          item.grossWeight,
+          item.netWeight
+        ]
+      );
+    }
+  }
+
+  console.log('Seeded packing list items...');
+
   console.log('Database seeding completed successfully!');
   process.exit(0);
 }

@@ -46,6 +46,139 @@ export class InvoiceService {
     return invoice;
   }
   
+  async importInvoices(invoicesData: Array<{
+    invoiceNumber: string;
+    invoiceType: InvoiceType;
+    customerName: string;
+    customerCountry: string;
+    invoiceDate: string;
+    dueDate?: string;
+    totalAmount: number;
+    currency: 'USD' | 'INR';
+    status?: string;
+    items?: Array<{
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+    }>;
+  }>): Promise<{
+    success: boolean;
+    totalRecords: number;
+    successfulRecords: number;
+    failedRecords: number;
+    errors?: Array<{
+      row: number;
+      field: string;
+      message: string;
+    }>;
+  }> {
+    const result = {
+      success: true,
+      totalRecords: invoicesData.length,
+      successfulRecords: 0,
+      failedRecords: 0,
+      errors: [] as Array<{ row: number; field: string; message: string }>
+    };
+
+    for (let i = 0; i < invoicesData.length; i++) {
+      const invoiceData = invoicesData[i];
+      const rowNumber = i + 1;
+
+      try {
+        // Check for duplicate invoice number
+        const existingInvoice = await repositories.invoice.findOne(
+          inv => inv.invoiceNumber === invoiceData.invoiceNumber
+        );
+
+        if (existingInvoice) {
+          result.errors!.push({
+            row: rowNumber,
+            field: 'invoiceNumber',
+            message: `Invoice number ${invoiceData.invoiceNumber} already exists`
+          });
+          result.failedRecords++;
+          continue;
+        }
+
+        // Create or find customer
+        let customer = await repositories.customer.findOne(
+          c => c.companyName === invoiceData.customerName
+        );
+
+        if (!customer) {
+          customer = await repositories.customer.create({
+            companyName: invoiceData.customerName,
+            contactPerson: invoiceData.customerName,
+            email: `${invoiceData.customerName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+            phone: '+1234567890',
+            address: {
+              street: 'Unknown',
+              city: 'Unknown',
+              state: 'Unknown',
+              country: invoiceData.customerCountry,
+              postalCode: '00000'
+            },
+            taxId: 'UNKNOWN',
+            currency: invoiceData.currency
+          });
+        }
+
+        // Create a mock order for the invoice
+        const order = await repositories.order.create({
+          orderNumber: `ORD-${Date.now()}-${i}`,
+          customerId: customer.id,
+          orderDate: new Date(invoiceData.invoiceDate),
+          status: 'confirmed',
+          items: invoiceData.items?.map(item => ({
+            productId: 'mock-product-id',
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+            batchNumber: 'BATCH-001',
+            expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year from now
+          })) || [],
+          subtotal: invoiceData.totalAmount,
+          igst: 0,
+          drawback: 0,
+          rodtep: 0,
+          totalAmount: invoiceData.totalAmount,
+          currency: invoiceData.currency
+        });
+
+        // Create the invoice
+        const invoice = await repositories.invoice.create({
+          invoiceNumber: invoiceData.invoiceNumber,
+          invoiceType: invoiceData.invoiceType,
+          orderId: order.id,
+          invoiceDate: new Date(invoiceData.invoiceDate),
+          dueDate: invoiceData.dueDate ? new Date(invoiceData.dueDate) : undefined,
+          subtotal: invoiceData.totalAmount,
+          igst: 0,
+          drawback: 0,
+          rodtep: 0,
+          totalAmount: invoiceData.totalAmount,
+          currency: invoiceData.currency,
+          bankDetails: CONSTANTS.BANK_DETAILS.primary,
+          termsAndConditions: this.getDefaultTerms(invoiceData.invoiceType),
+        });
+
+        result.successfulRecords++;
+      } catch (error) {
+        console.error(`Error importing invoice at row ${rowNumber}:`, error);
+        result.errors!.push({
+          row: rowNumber,
+          field: 'general',
+          message: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
+        result.failedRecords++;
+      }
+    }
+
+    result.success = result.failedRecords === 0;
+    return result;
+  }
+  
   async getInvoice(id: string): Promise<Invoice> {
     const invoice = await repositories.invoice.findById(id);
     if (!invoice) {

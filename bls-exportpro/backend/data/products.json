@@ -43,5 +43,50 @@
     "id": "e5e02f79-9052-41b7-bd64-e384d9619ff9",
     "createdAt": "2025-08-08T05:42:47.257Z",
     "updatedAt": "2025-08-08T05:42:47.257Z"
+  },
+  {
+    "productCode": "PAR-500",
+    "brandName": "Paracip",
+    "genericName": "Paracetamol",
+    "strength": "500mg",
+    "dosageForm": "Tablet",
+    "packSize": "10x10",
+    "manufacturer": "Cipla Ltd",
+    "hsnCode": "30049099",
+    "unitPrice": 0.05,
+    "currency": "USD",
+    "id": "a8e32eff-d57e-4478-8be0-1161ca84d9c1",
+    "createdAt": "2025-08-13T06:54:36.676Z",
+    "updatedAt": "2025-08-13T06:54:36.676Z"
+  },
+  {
+    "productCode": "AMX-500",
+    "brandName": "Amoxil",
+    "genericName": "Amoxicillin",
+    "strength": "500mg",
+    "dosageForm": "Capsule",
+    "packSize": "10x10",
+    "manufacturer": "GSK",
+    "hsnCode": "30041020",
+    "unitPrice": 0.08,
+    "currency": "USD",
+    "id": "812a2c91-3a8c-4665-8be5-c45ab5562314",
+    "createdAt": "2025-08-13T06:54:36.679Z",
+    "updatedAt": "2025-08-13T06:54:36.679Z"
+  },
+  {
+    "productCode": "CIP-500",
+    "brandName": "Ciplox",
+    "genericName": "Ciprofloxacin",
+    "strength": "500mg",
+    "dosageForm": "Tablet",
+    "packSize": "10x10",
+    "manufacturer": "Cipla Ltd",
+    "hsnCode": "30042090",
+    "unitPrice": 0.1,
+    "currency": "USD",
+    "id": "6cb7de3d-934e-41a0-90d9-092a6c744616",
+    "createdAt": "2025-08-13T06:54:36.683Z",
+    "updatedAt": "2025-08-13T06:54:36.683Z"
   }
 ]
