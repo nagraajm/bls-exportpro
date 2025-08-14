@@ -1,7 +1,7 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-import { Invoice, Order, PackingList } from '../../../shared/types.ts';
+import { Invoice, Order, PackingList } from '../../../shared/types';
 import { CONSTANTS } from '../config/constants';
 import { formatCurrency } from '../utils/calculations';
 

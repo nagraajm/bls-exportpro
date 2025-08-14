@@ -1,5 +1,5 @@
 import { repositories } from '../repositories';
-import { DashboardMetrics } from '../../../shared/types.ts';
+import { DashboardMetrics } from '../../../shared/types';
 
 export class DashboardService {
   async getMetrics(): Promise<DashboardMetrics> {

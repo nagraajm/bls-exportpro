@@ -3,7 +3,6 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Table } from '../components/Table';
 import { GlassCard } from '../components/ui/GlassCard';
-import { DataGrid } from '../components/DataGrid';
 import { 
   Upload, 
   FileSpreadsheet, 
@@ -80,7 +79,7 @@ export const InvoiceGenerator: React.FC = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/invoice-generator/orders');
+      const response = await fetch('http://localhost:5001/api/invoice-generator/orders');
       const data = await response.json();
       if (data.success) {
         setOrders(data.data);
@@ -130,7 +129,7 @@ export const InvoiceGenerator: React.FC = () => {
   const fetchOrderDetails = async (orderId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/invoice-generator/orders/${orderId}`);
+      const response = await fetch(`http://localhost:5001/api/invoice-generator/orders/${orderId}`);
       const data = await response.json();
       if (data.success) {
         setSelectedOrder(data.data);
@@ -147,7 +146,7 @@ export const InvoiceGenerator: React.FC = () => {
   const generateInvoice = async (orderId: string, type: 'PROFORMA INVOICE' | 'INVOICE') => {
     setGenerating(true);
     try {
-      const response = await fetch(`/api/invoice-generator/orders/${orderId}/generate`, {
+      const response = await fetch(`http://localhost:5001/api/invoice-generator/orders/${orderId}/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,8 +156,9 @@ export const InvoiceGenerator: React.FC = () => {
       
       const data = await response.json();
       if (data.success) {
-        // Open the PDF in a new tab
-        window.open(`${data.data.downloadUrl}`, '_blank');
+        window.open(`http://localhost:5001${data.data.downloadUrl}`, '_blank');
+        setSuccess(`${type} generated successfully!`);
+        setTimeout(() => setSuccess(null), 3000);
       } else {
         setError('Failed to generate invoice');
       }
@@ -456,16 +456,19 @@ export const InvoiceGenerator: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Data Table with new DataGrid component */}
+                  {/* Data Table */}
                   {selectedSheet && uploadedData[selectedSheet] && (
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <DataGrid
-                        data={uploadedData[selectedSheet]}
-                        title={`${selectedSheet} (${uploadedData[selectedSheet].length} records)`}
-                        showSearch={true}
-                        showExport={true}
-                        pageSize={25}
-                      />
+                    <div>
+                      <h3 className="font-medium mb-2">
+                        {selectedSheet} Data ({uploadedData[selectedSheet].length} records)
+                      </h3>
+                      <div className="max-h-96 overflow-auto">
+                        <Table
+                          data={uploadedData[selectedSheet]}
+                          columns={getUploadedDataColumns()}
+                          loading={false}
+                        />
+                      </div>
                     </div>
                   )}
 

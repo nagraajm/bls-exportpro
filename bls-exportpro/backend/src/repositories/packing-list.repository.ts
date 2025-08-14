@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { PackingList } from '../../../shared/types.ts';
+import { PackingList } from '../../../shared/types';
 
 export class PackingListRepository extends BaseRepository<PackingList> {
   constructor() {

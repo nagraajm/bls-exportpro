@@ -19,11 +19,14 @@ import documentRoutes from './routes/document.routes';
 import misReportsRoutes from './routes/mis-reports.routes';
 
 import { errorHandler, notFound } from './middleware/error.middleware';
+import { logActivity } from './middleware/activity-log';
 import { reportSchedulerService } from './services/scheduler/report-scheduler.service';
 import { initDatabase } from './config/sqlite.config';
 import invoiceGeneratorRoutes from './routes/invoice-generator.routes';
 import orderCreationRoutes from './routes/order-creation.routes';
 import excelImportRoutes from './routes/excel-import.routes';
+import cambodiaExcelRoutes from './routes/cambodia-excel.routes';
+import statusUploadRoutes from './routes/status-upload.routes';
 
 dotenv.config();
 
@@ -37,8 +40,10 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(logActivity);
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
 app.get('/health', (req, res) => {
   res.json({
@@ -64,6 +69,8 @@ app.use(`${API_PREFIX}/documents`, documentRoutes);
 app.use(`${API_PREFIX}/invoice-generator`, invoiceGeneratorRoutes);
 app.use(`${API_PREFIX}/order-creation`, orderCreationRoutes);
 app.use(`${API_PREFIX}/excel-import`, excelImportRoutes);
+app.use(`${API_PREFIX}/cambodia-excel`, cambodiaExcelRoutes);
+app.use(`${API_PREFIX}/status-upload`, statusUploadRoutes);
 // app.use(`${API_PREFIX}/mis-reports`, misReportsRoutes);
 
 app.use(notFound);

@@ -2,7 +2,7 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import { BaseDocumentTemplate, DocumentOptions } from './base.template';
-import { PackingList } from '../../../../../shared/types.ts';
+import { PackingList } from '../../../../../shared/types';
 
 export class PackingListTemplate extends BaseDocumentTemplate {
   constructor(options: DocumentOptions = {}) {

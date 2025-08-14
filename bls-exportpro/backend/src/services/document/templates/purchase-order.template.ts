@@ -2,7 +2,7 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import { BaseDocumentTemplate, DocumentOptions } from './base.template';
-import { PurchaseOrder } from '../../../../../shared/types.ts';
+import { PurchaseOrder } from '../../../../../shared/types';
 
 export class PurchaseOrderTemplate extends BaseDocumentTemplate {
   constructor(options: DocumentOptions = {}) {

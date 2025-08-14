@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { PurchaseOrder } from '../../../shared/types.ts';
+import { PurchaseOrder } from '../../../shared/types';
 
 export class PurchaseOrderRepository extends BaseRepository<PurchaseOrder> {
   constructor() {

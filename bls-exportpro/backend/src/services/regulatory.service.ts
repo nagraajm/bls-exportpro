@@ -1,5 +1,5 @@
 import { repositories } from '../repositories';
-import { RegulatoryDocument, RegulatoryStatus } from '../../../shared/types.ts';
+import { RegulatoryDocument, RegulatoryStatus } from '../../../shared/types';
 import { AppError } from '../middleware/error.middleware';
 
 export class RegulatoryService {

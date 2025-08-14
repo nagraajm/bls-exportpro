@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import ExcelJS from 'exceljs';
-import { Product, Customer, Order, ExcelImportResult } from '../../../shared/types.ts';
+import { Product, Customer, Order, ExcelImportResult } from '../../../shared/types';
 import { repositories } from '../repositories';
 import path from 'path';
 import fs from 'fs/promises';

@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { RegulatoryDocument } from '../../../shared/types.ts';
+import { RegulatoryDocument } from '../../../shared/types';
 
 export class RegulatoryRepository extends BaseRepository<RegulatoryDocument> {
   constructor() {

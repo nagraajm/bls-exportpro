@@ -1,5 +1,5 @@
 import { repositories } from '../repositories';
-import { Invoice, InvoiceType, Order } from '../../../shared/types.ts';
+import { Invoice, InvoiceType, Order } from '../../../shared/types';
 import { calculateOrderTotals } from '../utils/calculations';
 import { AppError } from '../middleware/error.middleware';
 import { CONSTANTS } from '../config/constants';

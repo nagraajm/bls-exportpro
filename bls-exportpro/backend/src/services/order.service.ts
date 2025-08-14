@@ -1,5 +1,5 @@
 import { repositories } from '../repositories';
-import { Order, OrderItem, OrderStatus } from '../../../shared/types.ts';
+import { Order, OrderItem, OrderStatus } from '../../../shared/types';
 import { calculateOrderTotals } from '../utils/calculations';
 import { AppError } from '../middleware/error.middleware';
 

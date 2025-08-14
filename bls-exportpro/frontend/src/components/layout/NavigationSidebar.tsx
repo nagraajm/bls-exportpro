@@ -19,7 +19,8 @@ import {
   Sun,
   Moon,
   LogOut,
-  User
+  User,
+  Pill
 } from 'lucide-react';
 import logoImage from '../../assets/logo-bohra-lifescience.webp';
 
@@ -27,19 +28,22 @@ interface NavItem {
   name: string;
   path: string;
   icon: React.ReactNode;
+  isImplemented?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { name: 'Orders', path: '/orders', icon: <Package className="w-5 h-5" /> },
-  { name: 'Create Order', path: '/create-order', icon: <Plus className="w-5 h-5" /> },
-  { name: 'Invoices', path: '/invoices', icon: <FileText className="w-5 h-5" /> },
-  { name: 'Invoice Generator', path: '/invoice-generator', icon: <Receipt className="w-5 h-5" /> },
-  { name: 'Packing Lists', path: '/packing-lists', icon: <PackageCheck className="w-5 h-5" /> },
-  { name: 'Regulatory', path: '/regulatory', icon: <Shield className="w-5 h-5" /> },
-  { name: 'Inventory', path: '/inventory', icon: <Boxes className="w-5 h-5" /> },
-  { name: 'Purchase Orders', path: '/purchase-orders', icon: <ShoppingCart className="w-5 h-5" /> },
-  { name: 'Reports', path: '/reports', icon: <BarChart3 className="w-5 h-5" /> },
+  { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, isImplemented: true },
+  { name: 'Products', path: '/products', icon: <Pill className="w-5 h-5" />, isImplemented: true },
+  { name: 'Orders', path: '/orders', icon: <Package className="w-5 h-5" />, isImplemented: true },
+  { name: 'Create Order', path: '/create-order', icon: <Plus className="w-5 h-5" />, isImplemented: true },
+  { name: 'Invoices', path: '/invoices', icon: <FileText className="w-5 h-5" />, isImplemented: true },
+  { name: 'Invoice Generator', path: '/invoice-generator', icon: <Receipt className="w-5 h-5" />, isImplemented: true },
+  { name: 'Packing Lists', path: '/packing-lists', icon: <PackageCheck className="w-5 h-5" />, isImplemented: true },
+  // Hidden/unimplemented features - commented out
+  // { name: 'Regulatory', path: '/regulatory', icon: <Shield className="w-5 h-5" />, isImplemented: false },
+  // { name: 'Inventory', path: '/inventory', icon: <Boxes className="w-5 h-5" />, isImplemented: false },
+  // { name: 'Purchase Orders', path: '/purchase-orders', icon: <ShoppingCart className="w-5 h-5" />, isImplemented: false },
+  { name: 'Reports', path: '/reports', icon: <BarChart3 className="w-5 h-5" />, isImplemented: true },
 ];
 
 export const NavigationSidebar: React.FC = () => {

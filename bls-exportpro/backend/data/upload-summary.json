@@ -1,0 +1,249 @@
+{
+  "totalSheets": 14,
+  "sheets": [
+    {
+      "name": "ABANDONED",
+      "rowCount": 24,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date Of Issue",
+        "Date of Expiry",
+        "Renewal Initiation Dt.",
+        "Original Certificate Rcpt.",
+        "Status"
+      ]
+    },
+    {
+      "name": "RENEWAL - PHASE 1 ",
+      "rowCount": 33,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "STATUS",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "RENEWAL - PHASE 2",
+      "rowCount": 20,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "STATUS",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "APPLIED NEW",
+      "rowCount": 18,
+      "columns": [
+        "SR. NO.",
+        "PLANT",
+        "BRAND",
+        "GENERIC NAME",
+        "PACK SIZE",
+        "SAMPLE",
+        "CoPP",
+        "DOSSIERS",
+        "STATUS"
+      ]
+    },
+    {
+      "name": "ZAM ZAM",
+      "rowCount": 48,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "MEET HENG",
+      "rowCount": 3,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "STATUS",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "PPSI",
+      "rowCount": 25,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "STATUS",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "PPSI PHASE II",
+      "rowCount": 21,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "PP",
+        "CoPP",
+        "Sample will be ready by:",
+        "Working Standards",
+        "Dossier will be Completed  by:",
+        "STATUS"
+      ]
+    },
+    {
+      "name": "R in 2028",
+      "rowCount": 9,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "AVEO - VGRANDIS Products",
+      "rowCount": 7,
+      "columns": [
+        "Sr.No",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "PP & COPP'S",
+        "DOSSIER",
+        "SAMPLE",
+        "LEGAL DOCS.",
+        "SAMPLE SUBMISSION RECEPIT"
+      ]
+    },
+    {
+      "name": "VGRANDIS",
+      "rowCount": 11,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "Reg.Cert.No.",
+        "Date of Expiry",
+        "Renewal Apply Date",
+        "STATUS",
+        "Original Certificate Rcpt."
+      ]
+    },
+    {
+      "name": "VGRANDIS Previous update",
+      "rowCount": 27,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "PP",
+        "CoPP",
+        "Sample, Dossier & Legal Docs.",
+        "Remark"
+      ]
+    },
+    {
+      "name": "VGRANDIS All Products",
+      "rowCount": 12,
+      "columns": [
+        "Sr.No",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "DOSSIERS",
+        "SAMPLE",
+        "CoPP",
+        "REMARK"
+      ]
+    },
+    {
+      "name": "VGRANDIS Update ",
+      "rowCount": 16,
+      "columns": [
+        "Sr.No",
+        "Regn Status",
+        "MFG  UNIT",
+        "BRAND NAME",
+        "GENERIC NAME",
+        "UNIT PACK",
+        "PACK STYLE",
+        "PP",
+        "CoPP",
+        "Sample, Dossier & Legal Docs.",
+        "Remark"
+      ]
+    }
+  ],
+  "totalRows": 274,
+  "totalProducts": 0
+}

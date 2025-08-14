@@ -1,5 +1,5 @@
 import { CONSTANTS } from '../config/constants';
-import { OrderItem } from '../../../shared/types.ts';
+import { OrderItem } from '../../../shared/types';
 
 export interface CalculationResult {
   subtotal: number;

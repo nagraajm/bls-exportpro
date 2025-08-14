@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { Invoice, InvoiceType } from '../../../shared/types.ts';
+import { Invoice, InvoiceType } from '../../../shared/types';
 
 export class InvoiceRepository extends BaseRepository<Invoice> {
   constructor() {

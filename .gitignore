@@ -104,3 +104,6 @@ docs/.vuepress/dist/
 # PDF files in root
 *.pdf
 !docs-info/*.pdf
+
+# Deployment scripts (moved to avoid false positives)
+deployment-scripts-backup/

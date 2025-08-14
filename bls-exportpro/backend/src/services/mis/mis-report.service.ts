@@ -800,7 +800,7 @@ export class MISReportService {
       .slice(0, 10);
     
     const chart: ChartConfiguration = {
-      type: 'horizontalBar',
+      type: 'bar',
       data: {
         labels: topProducts.map(p => p.productName),
         datasets: [{
@@ -811,6 +811,7 @@ export class MISReportService {
       },
       options: {
         responsive: false,
+        indexAxis: 'y' as const,
         plugins: {
           title: {
             display: true,
@@ -820,10 +821,10 @@ export class MISReportService {
       }
     };
     
-    const chartImage = await this.chartRenderer.renderToBuffer(chart as any);
+    const chartImage = await this.chartRenderer.renderToBuffer(chart);
     
     return [{
-      type: 'horizontalBar',
+      type: 'bar',
       title: 'Top 10 Products by Movement',
       imageUrl: `data:image/png;base64,${chartImage.toString('base64')}`,
       config: chart
@@ -896,7 +897,7 @@ export class MISReportService {
     let row = 7;
     Object.entries(report.summary).forEach(([key, value]) => {
       sheet.getCell(`A${row}`).value = this.formatLabel(key);
-      sheet.getCell(`B${row}`).value = value;
+      sheet.getCell(`B${row}`).value = value as ExcelJS.CellValue;
       
       if (typeof value === 'number' && key.toLowerCase().includes('amount') || key.toLowerCase().includes('revenue')) {
         sheet.getCell(`B${row}`).numFmt = '#,##0.00';
@@ -997,8 +998,8 @@ export class MISReportService {
       return cached;
     }
     
-    const invoices = await this.getInvoicesInPeriod(options.startDate, options.endDate);
-    const orders = await this.getOrdersInPeriod(options.startDate, options.endDate);
+    const invoices = await this.getInvoicesInPeriod(options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), options.endDate || new Date());
+    const orders = await this.getOrdersInPeriod(options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), options.endDate || new Date());
     
     // Calculate drawback and RODTEP claims
     const claimsData = orders.map(order => {
@@ -1051,11 +1052,11 @@ export class MISReportService {
     return reportData;
   }
 
-  private async generateDrawbackCharts(claimsData: any[], summary: any): Promise<any[]> {
+  private async generateDrawbackCharts(claimsData: any[], _summary: any): Promise<any[]> {
     const charts: any[] = [];
     
     // Monthly claims chart
-    const monthlyData = this.groupByMonth(claimsData, 'orderDate');
+    const monthlyData = this.groupClaimsByMonth(claimsData);
     const monthlyChart: ChartConfiguration = {
       type: 'bar',
       data: {
@@ -1121,9 +1122,9 @@ export class MISReportService {
     // Add summary
     worksheet.addRow(['Summary']);
     worksheet.addRow(['Total Orders:', data.summary.totalOrders]);
-    worksheet.addRow(['Total Drawback:', this.formatCurrency(data.summary.totalDrawback, 'INR')]);
-    worksheet.addRow(['Total RODTEP:', this.formatCurrency(data.summary.totalRodtep, 'INR')]);
-    worksheet.addRow(['Total Claims:', this.formatCurrency(data.summary.totalClaims, 'INR')]);
+    worksheet.addRow(['Total Drawback:', this.formatCurrencyValue(data.summary.totalDrawback, 'INR')]);
+    worksheet.addRow(['Total RODTEP:', this.formatCurrencyValue(data.summary.totalRodtep, 'INR')]);
+    worksheet.addRow(['Total Claims:', this.formatCurrencyValue(data.summary.totalClaims, 'INR')]);
     worksheet.addRow(['Pending Claims:', data.summary.pendingClaims]);
     worksheet.addRow([]);
     
@@ -1136,10 +1137,10 @@ export class MISReportService {
         row.invoiceNumber,
         new Date(row.orderDate).toLocaleDateString(),
         row.customer,
-        this.formatCurrency(row.totalAmount, row.currency),
-        this.formatCurrency(row.drawbackAmount, row.currency),
-        this.formatCurrency(row.rodtepAmount, row.currency),
-        this.formatCurrency(row.totalClaim, row.currency),
+        this.formatCurrencyValue(row.totalAmount, row.currency),
+        this.formatCurrencyValue(row.drawbackAmount, row.currency),
+        this.formatCurrencyValue(row.rodtepAmount, row.currency),
+        this.formatCurrencyValue(row.totalClaim, row.currency),
         row.status
       ]);
     });
@@ -1151,7 +1152,7 @@ export class MISReportService {
     worksheet.getColumn(8).numFmt = '#,##0.00';
     
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return Buffer.from(buffer);
   }
 
   getCachedReport(cacheKey: string): ReportData | undefined {
@@ -1160,6 +1161,27 @@ export class MISReportService {
 
   clearCache(): void {
     this.cache.flushAll();
+  }
+
+  private groupClaimsByMonth(claimsData: any[]): { [key: string]: any[] } {
+    const grouped: { [key: string]: any[] } = {};
+    
+    claimsData.forEach(claim => {
+      const date = new Date(claim.orderDate);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = [];
+      }
+      grouped[monthKey].push(claim);
+    });
+    
+    return grouped;
+  }
+
+  private formatCurrencyValue(amount: number, currency: string): string {
+    const symbol = currency === 'INR' ? '₹' : '$';
+    return `${symbol}${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 }
 
