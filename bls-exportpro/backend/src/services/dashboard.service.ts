@@ -21,23 +21,8 @@ export class DashboardService {
     
     const productSales = new Map<string, { name: string; quantity: number; revenue: number }>();
     
-    for (const order of orders) {
-      for (const item of order.items) {
-        const product = await repositories.product.findById(item.productId);
-        if (product) {
-          const key = item.productId;
-          const existing = productSales.get(key) || { 
-            name: product.brandName, 
-            quantity: 0, 
-            revenue: 0 
-          };
-          
-          existing.quantity += item.quantity;
-          existing.revenue += item.totalPrice;
-          productSales.set(key, existing);
-        }
-      }
-    }
+    // Skip product sales for now until order items are properly structured
+    // TODO: Implement proper order items fetching
     
     const topProducts = Array.from(productSales.entries())
       .map(([productId, data]) => ({

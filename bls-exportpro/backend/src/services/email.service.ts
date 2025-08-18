@@ -19,7 +19,7 @@ class EmailService {
   private initializeTransporter() {
     // Configure based on environment variables
     if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT),
         secure: process.env.SMTP_SECURE === 'true',

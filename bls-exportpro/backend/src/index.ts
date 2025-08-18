@@ -71,7 +71,7 @@ app.use(`${API_PREFIX}/order-creation`, orderCreationRoutes);
 app.use(`${API_PREFIX}/excel-import`, excelImportRoutes);
 app.use(`${API_PREFIX}/cambodia-excel`, cambodiaExcelRoutes);
 app.use(`${API_PREFIX}/status-upload`, statusUploadRoutes);
-// app.use(`${API_PREFIX}/mis-reports`, misReportsRoutes);
+app.use(`${API_PREFIX}/mis-reports`, misReportsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

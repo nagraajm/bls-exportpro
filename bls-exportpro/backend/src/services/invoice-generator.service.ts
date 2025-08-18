@@ -18,6 +18,7 @@ interface InvoiceData {
   placeOfDelivery?: string;
   termsOfDelivery?: string;
   paymentTerms?: string;
+  logoBase64?: string;
 }
 
 export class InvoiceGeneratorService {
@@ -68,6 +69,16 @@ export class InvoiceGeneratorService {
       'ADVANCE'
     ]);
     
+    // Load logo
+    const logoPath = path.join(__dirname, '../../assets/logo-bohra-lifescience.webp');
+    let logoBase64 = '';
+    try {
+      const logoBuffer = await fs.readFile(logoPath);
+      logoBase64 = logoBuffer.toString('base64');
+    } catch (error) {
+      console.warn('Could not load logo:', error);
+    }
+
     const invoiceData: InvoiceData = {
       customer,
       order,
@@ -89,7 +100,8 @@ export class InvoiceGeneratorService {
       portOfDischarge: 'LAEM CHABANG, THAILAND',
       placeOfDelivery: 'YANGON VIA THAI-MYANMAR BORDER',
       termsOfDelivery: 'CIF SEA LAEM CHABANG, THAILAND',
-      paymentTerms: 'ADVANCE'
+      paymentTerms: 'ADVANCE',
+      logoBase64
     };
     
     const filePath = await this.generatePDF(invoiceData);
@@ -157,6 +169,7 @@ export class InvoiceGeneratorService {
     html = html.replace(/{{totalAmount}}/g, data.totalAmount.toFixed(2));
     html = html.replace(/{{totalAmountWords}}/g, this.numberToWords(data.totalAmount));
     html = html.replace(/{{isProforma}}/g, data.invoiceType === 'PROFORMA INVOICE' ? 'true' : 'false');
+    html = html.replace(/{{logoBase64}}/g, data.logoBase64 || '');
     
     // Customer info
     html = html.replace(/{{customer\.company_name}}/g, data.customer.company_name);

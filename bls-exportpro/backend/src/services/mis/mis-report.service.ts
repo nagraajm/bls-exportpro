@@ -60,8 +60,11 @@ export class MISReportService {
       return cached;
     }
     
-    const orders = await this.getOrdersInPeriod(options.startDate, options.endDate);
-    const invoices = await this.getInvoicesInPeriod(options.startDate, options.endDate);
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
+    
+    const orders = await this.getOrdersInPeriod(startDate, endDate);
+    const invoices = await this.getInvoicesInPeriod(startDate, endDate);
     
     // Product-wise analysis
     const productAnalysis = await this.analyzeByProduct(orders, options);
@@ -88,8 +91,8 @@ export class MISReportService {
       title: 'Sales Analysis Report',
       generatedAt: new Date(),
       period: {
-        start: options.startDate,
-        end: options.endDate
+        start: startDate,
+        end: endDate
       },
       data: [
         {
@@ -120,11 +123,13 @@ export class MISReportService {
   }
   
   async generateRegulatoryComplianceReport(options: ReportOptions): Promise<ReportData> {
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
     const products = await repositories.product.findAll();
     
     const complianceData = products.map(product => {
-      const registrationDate = product.registrationDate ? new Date(product.registrationDate) : null;
-      const expiryDate = product.expiryDate ? new Date(product.expiryDate) : null;
+      const registrationDate = (product as any).registrationDate ? new Date((product as any).registrationDate) : null;
+      const expiryDate = (product as any).expiryDate ? new Date((product as any).expiryDate) : null;
       const today = new Date();
       
       let status = 'Not Registered';
@@ -144,11 +149,11 @@ export class MISReportService {
       }
       
       return {
-        productCode: product.productCode,
+        productCode: product.id,
         productName: product.brandName,
         genericName: product.genericName,
-        registrationStatus: product.cambodiaRegistrationStatus || status,
-        registrationNumber: product.registrationNumber,
+        registrationStatus: (product as any).cambodiaRegistrationStatus || status,
+        registrationNumber: (product as any).registrationNumber,
         registrationDate,
         expiryDate,
         daysToExpiry,
@@ -168,8 +173,8 @@ export class MISReportService {
       title: 'Regulatory Compliance Report',
       generatedAt: new Date(),
       period: {
-        start: options.startDate,
-        end: options.endDate
+        start: startDate,
+        end: endDate
       },
       data: complianceData,
       summary,
@@ -184,7 +189,9 @@ export class MISReportService {
   }
   
   async generatePaymentOutstandingReport(options: ReportOptions): Promise<ReportData> {
-    const invoices = await this.getInvoicesInPeriod(options.startDate, options.endDate);
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
+    const invoices = await this.getInvoicesInPeriod(startDate, endDate);
     
     const outstandingData = await Promise.all(invoices.map(async invoice => {
       const order = invoice.order;
@@ -231,8 +238,8 @@ export class MISReportService {
       title: 'Payment Outstanding Report',
       generatedAt: new Date(),
       period: {
-        start: options.startDate,
-        end: options.endDate
+        start: startDate,
+        end: endDate
       },
       data: outstandingData,
       summary,
@@ -247,7 +254,9 @@ export class MISReportService {
   }
   
   async generateInventoryMovementReport(options: ReportOptions): Promise<ReportData> {
-    const orders = await this.getOrdersInPeriod(options.startDate, options.endDate);
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
+    const orders = await this.getOrdersInPeriod(startDate, endDate);
     const products = await repositories.product.findAll();
     
     const movementData = await Promise.all(products.map(async product => {
@@ -270,7 +279,7 @@ export class MISReportService {
       const monthlyMovement = this.calculateMonthlyMovement(productOrders, product.id, options);
       
       return {
-        productCode: product.productCode,
+        productCode: product.id,
         productName: product.brandName,
         genericName: product.genericName,
         totalQuantity,
@@ -295,8 +304,8 @@ export class MISReportService {
       title: 'Inventory Movement Report',
       generatedAt: new Date(),
       period: {
-        start: options.startDate,
-        end: options.endDate
+        start: startDate,
+        end: endDate
       },
       data: movementData,
       summary,
@@ -311,7 +320,9 @@ export class MISReportService {
   }
   
   async generateDrawbackRODTEPReport(options: ReportOptions): Promise<ReportData> {
-    const invoices = await this.getInvoicesInPeriod(options.startDate, options.endDate);
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
+    const invoices = await this.getInvoicesInPeriod(startDate, endDate);
     
     const claimsData = invoices.map(invoice => {
       const order = invoice.order;
@@ -350,8 +361,8 @@ export class MISReportService {
       title: 'Drawback and RODTEP Claims Report',
       generatedAt: new Date(),
       period: {
-        start: options.startDate,
-        end: options.endDate
+        start: startDate,
+        end: endDate
       },
       data: [
         {
@@ -447,7 +458,7 @@ export class MISReportService {
         if (!productMap.has(key)) {
           productMap.set(key, {
             productId: product.id,
-            productCode: product.productCode,
+            productCode: product.id,
             productName: product.brandName,
             genericName: product.genericName,
             quantity: 0,
@@ -578,7 +589,9 @@ export class MISReportService {
   }
   
   private calculateTurnoverRate(totalQuantity: number, options: ReportOptions): number {
-    const months = Math.ceil((options.endDate.getTime() - options.startDate.getTime()) / (30 * 24 * 60 * 60 * 1000));
+    const startDate = options.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = options.endDate || new Date();
+    const months = Math.ceil((endDate.getTime() - startDate.getTime()) / (30 * 24 * 60 * 60 * 1000));
     return months > 0 ? totalQuantity / months : 0;
   }
   

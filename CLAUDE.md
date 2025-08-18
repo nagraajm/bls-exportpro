@@ -20,6 +20,7 @@ npm install              # Install dependencies
 npm run dev              # Start development server (uses nodemon on port 5001)
 npm run build            # Compile TypeScript to JavaScript
 npm run start            # Run production build from dist/
+npm run prod:start       # Start production server with NODE_ENV=production
 npm run seed             # Seed database with sample data
 tsc --noEmit            # Type check without building
 ```
@@ -34,10 +35,19 @@ npm run preview          # Preview production build
 tsc --noEmit            # Type check without building
 ```
 
+### Testing
+```bash
+cd bls-exportpro/backend
+# Jest is configured but test files are empty - test framework available
+# Test files located in tests/api/ directory
+npm run test             # Run tests (currently shows "no test specified")
+./run-tests.sh          # Test script (exists but empty)
+```
+
 ### Database Setup
 ```bash
 cd bls-exportpro/backend
-npm run seed             # Seed JSON files with sample data
+npm run seed             # Seed SQLite database with sample data
 ts-node src/scripts/seed-sqlite.ts  # Initialize SQLite database (pharma.db)
 ```
 
@@ -65,6 +75,9 @@ The project uses a shared types directory (`/shared/types/`) with modular type d
 - `regulatory/`: Registration, compliance types
 - `financial/`: Payment, pricing types  
 - `reports/`: MIS report structures
+- `factories/`: Type factories and test data generation
+
+Shared types package: `@bls-exportpro/types` with own package.json and build system.
 
 **Note**: There's a legacy `/shared/types.ts` file that conflicts with the new modular types - prefer using the modular types in `/shared/types/`.
 
@@ -126,9 +139,10 @@ All APIs follow RESTful conventions under `/api` prefix:
 2. **Authentication**: Auth middleware disabled for testing - needs to be re-enabled for production
 3. **Routes**: Some Excel/MIS routes temporarily commented in index.ts
 4. **Database**: Currently using JSON files + SQLite - needs migration to production database
-5. **Testing**: No automated tests implemented yet
+5. **Testing**: Jest configured with test files in `/tests/api/` but tests are empty - framework ready for implementation
 6. **UI Theme**: Light theme contrast was fixed in January 2025 - ensure proper CSS variables are used
 7. **Charts**: Use dark tooltips with explicit white text for visibility in both themes
+8. **Build Scripts**: Empty shell scripts (run-tests.sh, build.sh) exist but need implementation
 
 ## Environment Configuration
 Backend `.env` file configuration:
