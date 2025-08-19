@@ -107,3 +107,11 @@ docs/.vuepress/dist/
 
 # Deployment scripts (moved to avoid false positives)
 deployment-scripts-backup/
+
+# SSH keys and sensitive deployment files
+deploy/ssh_files/
+*.pem
+*.key
+*_rsa
+*_rsa.pub
+ssh_files/

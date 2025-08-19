@@ -22,7 +22,7 @@ import {
   User,
   Pill
 } from 'lucide-react';
-import logoImage from '../../assets/logo-bohra-lifescience.webp';
+const logoImage = '/logo-bohra-lifescience.webp';
 
 interface NavItem {
   name: string;
