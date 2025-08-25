@@ -144,19 +144,31 @@ const Orders: React.FC = () => {
 
   const fetchCustomers = async () => {
     try {
-      const data = await api.get<Customer[]>('/customers');
-      setCustomers(data);
+      const response = await api.get<any>('/customers');
+      // Handle different response formats
+      const customerData = Array.isArray(response) ? response :
+                         response?.data ? response.data :
+                         response?.customers ? response.customers : [];
+                         
+      setCustomers(customerData || []);
     } catch (error) {
       console.error('Error fetching customers:', error);
+      setCustomers([]); // Set empty array to prevent undefined
     }
   };
 
   const fetchProducts = async () => {
     try {
-      const data = await api.get<Product[]>('/products');
-      setProducts(data);
+      const response = await api.get<any>('/products');
+      // Handle different response formats
+      const productData = Array.isArray(response) ? response :
+                        response?.data ? response.data :
+                        response?.products ? response.products : [];
+                        
+      setProducts(productData || []);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setProducts([]); // Set empty array to prevent undefined
     }
   };
 

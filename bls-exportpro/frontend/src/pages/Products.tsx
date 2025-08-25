@@ -12,8 +12,10 @@ import {
   FileText,
   Shield,
   Calendar,
-  Pill
+  Pill,
+  DollarSign
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 
 interface Product {
@@ -25,7 +27,8 @@ interface Product {
   dosageForm: string;
   packSize: string;
   category: string;
-  price: number;
+  procurementPrice: number;
+  sellingPrice: number;
   currency: string;
   hsCode: string;
   manufacturingSite: string;
@@ -37,12 +40,18 @@ interface Product {
 }
 
 const Products: React.FC = () => {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const handleUpdatePrice = async (product: Product) => {
+    setSelectedProduct(product);
+    setShowProductForm(true);
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -65,7 +74,8 @@ const Products: React.FC = () => {
           dosageForm: 'Tablets',
           packSize: '10x10 Blisters',
           category: 'Analgesics',
-          price: 45,
+          procurementPrice: 40,
+          sellingPrice: 45,
           currency: 'USD',
           hsCode: '3004.90.99',
           manufacturingSite: 'Site A - India',
@@ -84,7 +94,8 @@ const Products: React.FC = () => {
           dosageForm: 'Tablets',
           packSize: '6x1x10 Strips',
           category: 'Antibiotics',
-          price: 120,
+          procurementPrice: 100,
+          sellingPrice: 120,
           currency: 'USD',
           hsCode: '3004.10.00',
           manufacturingSite: 'Site B - India',
@@ -236,6 +247,7 @@ const Products: React.FC = () => {
                 <th className="text-left p-4 text-gray-400 font-medium">Strength</th>
                 <th className="text-left p-4 text-gray-400 font-medium">Pack Size</th>
                 <th className="text-left p-4 text-gray-400 font-medium">HS Code</th>
+                <th className="text-left p-4 text-gray-400 font-medium">Price (USD)</th>
                 <th className="text-left p-4 text-gray-400 font-medium">Mfg Site</th>
                 <th className="text-left p-4 text-gray-400 font-medium">Cambodia Reg.</th>
                 <th className="text-left p-4 text-gray-400 font-medium">Stock</th>
@@ -278,6 +290,12 @@ const Products: React.FC = () => {
                       <p className="text-gray-300 font-mono text-sm">{product.hsCode}</p>
                     </td>
                     <td className="p-4">
+                      <p className="text-white font-medium">${product.sellingPrice.toFixed(2)}</p>
+                      {user?.role === 'admin' && (
+                        <p className="text-xs text-gray-400">Cost: ${product.procurementPrice.toFixed(2)}</p>
+                      )}
+                    </td>
+                    <td className="p-4">
                       <p className="text-gray-300 text-sm">{product.manufacturingSite}</p>
                     </td>
                     <td className="p-4">
@@ -312,6 +330,15 @@ const Products: React.FC = () => {
                         >
                           <FileText className="w-4 h-4 text-gray-400" />
                         </button>
+                        {user?.role === 'admin' && (
+                          <button
+                            onClick={() => handleUpdatePrice(product)}
+                            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                            title="Update Prices"
+                          >
+                            <DollarSign className="w-4 h-4 text-gray-400" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </motion.tr>
@@ -403,6 +430,36 @@ const Products: React.FC = () => {
                       placeholder="e.g., 3004.90.99"
                     />
                   </div>
+                  
+                  {user?.role === 'admin' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Procurement Price (USD)
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
+                          placeholder="e.g., 40"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Selling Price (USD)
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
+                          placeholder="e.g., 45"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
                 
                 <div className="flex justify-end space-x-4 mt-6">

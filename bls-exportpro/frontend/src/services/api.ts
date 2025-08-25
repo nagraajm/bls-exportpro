@@ -1,11 +1,15 @@
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 export class ApiService {
   private async request<T>(url: string, options?: RequestInit): Promise<T> {
+    // Get JWT token from localStorage
+    const token = localStorage.getItem('authToken');
+
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options?.headers,
       },
     });
