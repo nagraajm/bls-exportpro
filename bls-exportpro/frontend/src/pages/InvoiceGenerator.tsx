@@ -4,13 +4,14 @@ import { Card } from '../components/Card';
 import { Table } from '../components/Table';
 import { GlassCard } from '../components/ui/GlassCard';
 import { DataGrid } from '../components/DataGrid';
+import { api } from '../services/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { 
   Upload, 
   FileSpreadsheet, 
   CheckCircle, 
   AlertCircle, 
-  X, 
-  Download,
+  X,
   BarChart3,
   FileText,
   Package,
@@ -79,16 +80,20 @@ export const InvoiceGenerator: React.FC = () => {
 
   const fetchOrders = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch('/api/invoice-generator/orders');
-      const data = await response.json();
-      if (data.success) {
-        setOrders(data.data);
-      } else {
-        setError('Failed to fetch orders');
-      }
-    } catch (err) {
-      setError('Network error while fetching orders');
+      const response = await api.get<any>('/orders/list?status=confirmed');
+      // Handle different response formats and ensure we always get an array
+      const orderData = Array.isArray(response) ? response :
+                       Array.isArray(response?.data) ? response.data :
+                       Array.isArray(response?.orders) ? response.orders :
+                       response?.data?.orders && Array.isArray(response.data.orders) ? response.data.orders : [];
+      
+      setOrders(orderData);
+    } catch (err: any) {
+      console.error('Failed to fetch orders:', err);
+      setError(err?.message || 'Network error while fetching orders');
+      setOrders([]); // Set empty array to prevent undefined
     } finally {
       setLoading(false);
     }
@@ -129,16 +134,22 @@ export const InvoiceGenerator: React.FC = () => {
 
   const fetchOrderDetails = async (orderId: string) => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`/api/invoice-generator/orders/${orderId}`);
-      const data = await response.json();
-      if (data.success) {
-        setSelectedOrder(data.data);
-      } else {
-        setError('Failed to fetch order details');
+      const response = await api.get<any>(`/orders/${orderId}`);
+      // Handle different response formats
+      const orderData = response?.data ? response.data :
+                       response?.order ? response.order : null;
+                       
+      if (!orderData) {
+        throw new Error('Invalid order data received');
       }
+      
+      setSelectedOrder(orderData);
     } catch (err) {
+      console.error('Failed to fetch order details:', err);
       setError('Network error while fetching order details');
+      setSelectedOrder(null); // Clear selected order on error
     } finally {
       setLoading(false);
     }
@@ -147,22 +158,11 @@ export const InvoiceGenerator: React.FC = () => {
   const generateInvoice = async (orderId: string, type: 'PROFORMA INVOICE' | 'INVOICE') => {
     setGenerating(true);
     try {
-      const response = await fetch(`/api/invoice-generator/orders/${orderId}/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ type }),
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        // Open the PDF in a new tab
-        window.open(`${data.data.downloadUrl}`, '_blank');
-      } else {
-        setError('Failed to generate invoice');
-      }
+      const data = await api.post<{ downloadUrl: string }>(`/orders/${orderId}/generate-invoice`, { type });
+      // Open the PDF in a new tab
+      window.open(`${API_BASE_URL}${data.downloadUrl}`, '_blank');
     } catch (err) {
+      console.error('Failed to generate invoice:', err);
       setError('Network error while generating invoice');
     } finally {
       setGenerating(false);
@@ -495,12 +495,24 @@ export const InvoiceGenerator: React.FC = () => {
       <Card>
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4">Available Orders</h2>
-          <Table
-            data={orders}
-            columns={orderColumns}
-            loading={loading}
-            emptyMessage="No orders found"
-          />
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <p className="text-gray-500">Loading orders...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={fetchOrders}>Retry</Button>
+            </div>
+          ) : (
+            <Table
+              data={orders}
+              columns={orderColumns}
+              loading={loading}
+              emptyMessage="No orders found"
+            />
+          )}
         </div>
       </Card>
 
