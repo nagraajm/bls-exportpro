@@ -6,7 +6,7 @@ echo "🔐 Testing SSH Connection to Hetzner Server"
 echo "==========================================="
 echo ""
 
-SERVER_IP="95.217.220.97"
+SERVER_IP="157.180.18.119"
 
 # Setup SSH agent
 echo "Setting up SSH agent..."

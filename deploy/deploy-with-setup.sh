@@ -10,12 +10,12 @@ echo "====================================="
 echo ""
 
 # Configuration
-SERVER_IP="95.217.220.97"
+SERVER_IP="157.180.18.119"
 DOMAIN="blsexport.nmdevai.com"
 SSH_KEY_PATH="/Users/nagarajm/Work/OS/bls-exportpro/deploy/ssh_files/nagaraj-m1"
 PUB_KEY_PATH="/Users/nagarajm/Work/OS/bls-exportpro/deploy/ssh_files/nagaraj-m1.pub"
 DEPLOY_DIR="/tmp/bls-deployment"
-REPO_URL="https://github.com/nagarajmantha/bls-exportpro.git"  # Update with your actual repo URL
+REPO_URL="https://github.com/nagraajm/bls-exportpro.git"
 
 echo "📋 Deployment Configuration"
 echo "Server IP: $SERVER_IP"
@@ -92,12 +92,10 @@ copy_files_to_server() {
         return 1
     }
     
-    # Copy all deployment files
-    scp /Users/nagarajm/Work/OS/bls-exportpro/deploy/server-setup.sh root@$SERVER_IP:$DEPLOY_DIR/ || return 1
+    # Copy necessary deployment files
     scp /Users/nagarajm/Work/OS/bls-exportpro/deploy/nginx-config.conf root@$SERVER_IP:$DEPLOY_DIR/ || return 1
     scp /Users/nagarajm/Work/OS/bls-exportpro/deploy/pm2-ecosystem.config.js root@$SERVER_IP:$DEPLOY_DIR/ || return 1
     scp /Users/nagarajm/Work/OS/bls-exportpro/deploy/production.env root@$SERVER_IP:$DEPLOY_DIR/ || return 1
-    scp /Users/nagarajm/Work/OS/bls-exportpro/deploy/deploy-final.sh root@$SERVER_IP:$DEPLOY_DIR/ || return 1
     
     log "✅ Files copied successfully"
     return 0
@@ -108,9 +106,93 @@ run_server_setup() {
     log "Running server setup..."
     
     ssh root@$SERVER_IP "
-        cd $DEPLOY_DIR
-        chmod +x server-setup.sh deploy-final.sh
-        ./server-setup.sh
+        set -e
+        
+        log() { echo \"[$(date +'%Y-%m-%d %H:%M:%S')] \$*\"; }
+        log '🚀 BLS Export Server Setup Script'
+        log '================================='
+        
+        # Update system
+        log '📦 Updating system packages...'
+        apt update && apt upgrade -y
+        
+        # Install required packages
+        log '📦 Installing required packages...'
+        apt install -y nodejs npm nginx certbot python3-certbot-nginx git curl
+        
+        # Install PM2 globally
+        log '📦 Installing PM2 process manager...'
+        npm install -g pm2
+        
+        # Create application directory
+        log '📁 Creating application directories...'
+        mkdir -p /var/www/blsexport
+        cd /var/www/blsexport
+        
+        # Remove existing files if any
+        log '🗑️  Cleaning existing files...'
+        rm -rf backend frontend bls-exportpro
+        
+        # Clone the repository
+        log '📥 Cloning repository...'
+        git clone $REPO_URL temp
+        mv temp/bls-exportpro/* .
+        mv temp/bls-exportpro/.* . 2>/dev/null || true
+        rm -rf temp
+        
+        # Setup backend
+        log '🔧 Setting up backend...'
+        cd backend
+        npm install --production
+        
+        # Install TypeScript type definitions (required for production build)
+        log '📦 Installing TypeScript type definitions...'
+        npm install --save-dev @types/express @types/cors @types/morgan @types/compression @types/helmet @types/bcryptjs @types/jsonwebtoken @types/multer @types/sqlite3 @types/pdfkit
+        
+        npm run build
+        
+        # Copy template files to dist (required for invoice generation)
+        log '📄 Copying template files...'
+        cp -r src/templates dist/
+        
+        # Create missing data files (required for PM2 startup)
+        log '📂 Creating missing data files...'
+        mkdir -p data
+        echo '[]' > data/product-pricing.json
+        
+        # Setup frontend
+        log '🔧 Setting up frontend...'
+        cd ../frontend
+        npm install
+        
+        # Build frontend with production mode
+        log '🏗️  Building frontend for production...'
+        npx vite build --mode production
+        
+        # Create production environment file
+        log '📝 Creating production environment...'
+        cd ../backend
+        cat > .env << 'EOL'
+PORT=6543
+NODE_ENV=production
+CORS_ORIGIN=https://$DOMAIN
+JWT_SECRET=your-super-secret-jwt-key-change-this
+API_PREFIX=/api
+UPLOAD_DIR=./uploads
+DATA_DIR=./data
+EOL
+        
+        # Set proper permissions
+        log '🔒 Setting permissions...'
+        chown -R www-data:www-data /var/www/blsexport
+        chmod -R 755 /var/www/blsexport
+        
+        # Seed the database
+        log '🌱 Seeding database...'
+        npm run seed
+        
+        log '✅ Server setup completed!'
+        log '🔄 Next: Configure Nginx and start services'
     " || {
         error "Server setup failed"
         return 1
@@ -125,8 +207,80 @@ run_final_deployment() {
     log "Running final deployment..."
     
     ssh root@$SERVER_IP "
-        cd $DEPLOY_DIR
-        ./deploy-final.sh
+        set -e
+        
+        # Configure PM2 and start backend
+        log() { echo \"[$(date +'%Y-%m-%d %H:%M:%S')] \$*\"; }
+        log '🚀 Final BLS Export Deployment Script'
+        log '====================================='
+        
+        log '📝 Setting up PM2 configuration...'
+        cd /var/www/blsexport
+        
+        # Stop any existing PM2 processes
+        pm2 delete bls-export-backend 2>/dev/null || true
+        
+        # Start the backend using the ecosystem config
+        log '🔄 Starting backend application...'
+        pm2 start bls-exportpro/ecosystem.config.js
+        
+        # Save PM2 configuration for auto-restart
+        pm2 save
+        
+        # Setup PM2 to start on system boot
+        pm2 startup systemd -u root --hp /root
+        
+        log '🌐 Configuring Nginx...'
+        cp $DEPLOY_DIR/nginx-config.conf /etc/nginx/sites-available/blsexport.nmdevai.com
+        ln -sf /etc/nginx/sites-available/blsexport.nmdevai.com /etc/nginx/sites-enabled/
+        nginx -t && systemctl reload nginx
+        
+        log '🔒 Setting up SSL certificate...'
+        certbot --nginx -d blsexport.nmdevai.com --non-interactive --agree-tos --email admin@nmdevai.com || log 'SSL setup pending - may complete automatically'
+        
+        log '🔥 Configuring firewall...'
+        ufw allow 22/tcp
+        ufw allow 80/tcp  
+        ufw allow 443/tcp
+        ufw --force enable
+        
+        log '🔍 Checking application status...'
+        pm2 status
+        systemctl status nginx --no-pager
+        
+        log '🧪 Verifying deployment functionality...'
+        # Wait for application to start
+        sleep 10
+        
+        # Test API endpoints
+        curl -s -f http://localhost:6543/api/products > /dev/null && log '✅ Products API working' || log '❌ Products API failed'
+        curl -s -f http://localhost:6543/api/orders > /dev/null && log '✅ Orders API working' || log '❌ Orders API failed'
+        
+        # Check if template files exist
+        if [ -f '/var/www/blsexport/backend/dist/templates/invoice-template.html' ]; then
+            log '✅ Invoice templates deployed'
+        else
+            log '❌ Invoice templates missing'
+        fi
+        
+        # Check data files
+        if [ -f '/var/www/blsexport/backend/data/product-pricing.json' ]; then
+            log '✅ Data files initialized'
+        else
+            log '❌ Data files missing'
+        fi
+        
+        log '✅ Deployment completed!'
+        log '🌍 Your application should be available at: https://blsexport.nmdevai.com'
+        log '🔧 Backend API: https://blsexport.nmdevai.com/api'
+        log '💓 Health check: https://blsexport.nmdevai.com/health'
+        log ''
+        log '📊 To monitor the application:'
+        log '   pm2 logs bls-export-backend'
+        log '   pm2 monit'
+        log ''
+        log '🧪 To test invoice generation:'
+        log '   curl -X POST https://blsexport.nmdevai.com/api/invoices/ORD-2024-001/generate -H \"Content-Type: application/json\" -d \"{\\\"type\\\":\\\"proforma\\\"}\"\''
     " || {
         error "Final deployment failed"
         return 1
