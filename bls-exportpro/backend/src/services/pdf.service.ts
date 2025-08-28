@@ -179,12 +179,12 @@ export class PDFService {
        .text('Bank Details:', 50, y);
     
     doc.fontSize(10).font('Helvetica');
-    const bank = invoice.bankDetails;
+    const bank = invoice.bankDetails || {};
     
-    doc.text(`Bank Name: ${bank.bankName}`, 50, y + 20)
-       .text(`Account Name: ${bank.accountName}`, 50, y + 35)
-       .text(`Account Number: ${bank.accountNumber}`, 50, y + 50)
-       .text(`SWIFT Code: ${bank.swiftCode}`, 50, y + 65);
+    doc.text(`Bank Name: ${bank.bankName || 'N/A'}`, 50, y + 20)
+       .text(`Account Name: ${bank.accountName || 'N/A'}`, 50, y + 35)
+       .text(`Account Number: ${bank.accountNumber || 'N/A'}`, 50, y + 50)
+       .text(`SWIFT Code: ${bank.swiftCode || 'N/A'}`, 50, y + 65);
     
     if (bank.ifscCode) {
       doc.text(`IFSC Code: ${bank.ifscCode}`, 50, y + 80);

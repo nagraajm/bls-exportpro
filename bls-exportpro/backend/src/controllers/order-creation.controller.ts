@@ -54,6 +54,16 @@ export class OrderCreationController {
       }
 
       const db = await getDatabase();
+      
+      // Check if order number already exists to prevent duplicates
+      const existingOrder = await db.get('SELECT id FROM orders WHERE order_number = ?', [orderNumber]);
+      if (existingOrder) {
+        return res.status(400).json({
+          success: false,
+          message: `Order number ${orderNumber} already exists. Please use a different order number.`
+        });
+      }
+
       const orderId = uuidv4();
 
       // Calculate total amount

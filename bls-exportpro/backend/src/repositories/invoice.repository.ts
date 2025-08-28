@@ -18,7 +18,7 @@ export class InvoiceRepository extends BaseRepository<Invoice> {
     const year = new Date().getFullYear();
     const prefix = type === 'proforma' ? 'PI' : type === 'pre-shipment' ? 'PSI' : 'INV';
     const count = await this.count(invoice => 
-      invoice.invoiceNumber.startsWith(`${prefix}-${year}-`)
+      invoice?.invoiceNumber?.startsWith?.(`${prefix}-${year}-`) || false
     );
     return `${prefix}-${year}-${String(count + 1).padStart(5, '0')}`;
   }

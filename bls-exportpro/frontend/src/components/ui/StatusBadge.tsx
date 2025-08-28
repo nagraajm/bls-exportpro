@@ -2,37 +2,55 @@ import React from 'react';
 import { cn } from '../../utils/cn';
 
 interface StatusBadgeProps {
-  status: 'active' | 'pending' | 'completed' | 'failed' | 'warning' | 'inactive';
+  variant?: 'success' | 'warning' | 'error' | 'default' | 'active' | 'pending' | 'completed' | 'failed' | 'inactive';
+  status?: 'active' | 'pending' | 'completed' | 'failed' | 'warning' | 'inactive';
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const statusStyles = {
+  success: {
+    bg: 'bg-gradient-to-r from-emerald-400 to-green-600',
+    text: 'text-white',
+    glow: 'shadow-emerald-500/50'
+  },
   active: {
     bg: 'bg-gradient-to-r from-emerald-400 to-green-600',
     text: 'text-white',
     glow: 'shadow-emerald-500/50'
+  },
+  warning: {
+    bg: 'bg-gradient-to-r from-amber-400 to-orange-600',
+    text: 'text-white',
+    glow: 'shadow-amber-500/50'
   },
   pending: {
     bg: 'bg-gradient-to-r from-amber-400 to-orange-600',
     text: 'text-white',
     glow: 'shadow-amber-500/50'
   },
-  completed: {
-    bg: 'bg-gradient-to-r from-blue-400 to-indigo-600',
+  error: {
+    bg: 'bg-gradient-to-r from-red-400 to-rose-600',
     text: 'text-white',
-    glow: 'shadow-blue-500/50'
+    glow: 'shadow-red-500/50'
   },
   failed: {
     bg: 'bg-gradient-to-r from-red-400 to-rose-600',
     text: 'text-white',
     glow: 'shadow-red-500/50'
   },
-  warning: {
-    bg: 'bg-gradient-to-r from-yellow-400 to-amber-600',
+  completed: {
+    bg: 'bg-gradient-to-r from-blue-400 to-indigo-600',
     text: 'text-white',
-    glow: 'shadow-yellow-500/50'
+    glow: 'shadow-blue-500/50'
+  },
+  default: {
+    bg: 'bg-gradient-to-r from-gray-500 to-gray-700',
+    text: 'text-white',
+    glow: 'shadow-gray-500/50'
   },
   inactive: {
     bg: 'bg-gradient-to-r from-gray-500 to-gray-700',
@@ -48,12 +66,16 @@ const sizeStyles = {
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ 
+  variant,
   status, 
   label, 
   size = 'md',
-  animated = false 
+  animated = false,
+  icon,
+  children
 }) => {
-  const styles = statusStyles[status] ?? statusStyles.pending;
+  const currentStatus = variant || status || 'default';
+  const styles = statusStyles[currentStatus as keyof typeof statusStyles] ?? statusStyles.default;
   
   return (
     <span
@@ -71,8 +93,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" 
               style={{ background: 'inherit' }} />
       )}
-      <span className="relative">
-        {label || status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className="relative flex items-center space-x-1">
+        {icon && <span className="flex items-center">{icon}</span>}
+        <span>
+          {children || label || currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
+        </span>
       </span>
     </span>
   );

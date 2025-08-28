@@ -5,11 +5,16 @@ import { Plus, Trash2 } from 'lucide-react';
 
 interface Product {
   id: string;
-  brand_name: string;
-  generic_name: string;
-  unit_pack: string;
-  rate_usd: number;
-  batch_prefix: string;
+  brand_name?: string;
+  generic_name?: string;
+  brandName?: string;
+  genericName?: string;
+  unit_pack?: string;
+  packSize?: string;
+  rate_usd?: number;
+  unitPrice?: number;
+  batch_prefix?: string;
+  productCode?: string;
 }
 
 interface Customer {
@@ -52,19 +57,55 @@ export const CreateOrder: React.FC = () => {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const [productsRes, customersRes] = await Promise.all([
-        fetch('/api/order-creation/products'),
-        fetch('/api/order-creation/customers')
-      ]);
+      // Try order-creation endpoints first, fall back to regular endpoints
+      let productsRes, customersRes;
+      
+      try {
+        [productsRes, customersRes] = await Promise.all([
+          fetch('/api/order-creation/products'),
+          fetch('/api/order-creation/customers')
+        ]);
+      } catch (err) {
+        // Fallback to regular endpoints if order-creation endpoints fail
+        [productsRes, customersRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/customers')
+        ]);
+      }
+
+      if (!productsRes.ok || !customersRes.ok) {
+        throw new Error(`API request failed: Products(${productsRes.status}), Customers(${customersRes.status})`);
+      }
 
       const productsData = await productsRes.json();
       const customersData = await customersRes.json();
 
-      if (productsData.success) setProducts(productsData.data);
-      if (customersData.success) setCustomers(customersData.data);
+      // Handle products data with multiple possible structures
+      if (productsData.success && Array.isArray(productsData.data)) {
+        setProducts(productsData.data);
+      } else if (productsData.data && Array.isArray(productsData.data)) {
+        setProducts(productsData.data);
+      } else if (Array.isArray(productsData)) {
+        setProducts(productsData);
+      } else {
+        setError('Invalid products data received from server');
+        return;
+      }
+      
+      // Handle customers data with multiple possible structures
+      if (customersData.success && Array.isArray(customersData.data)) {
+        setCustomers(customersData.data);
+      } else if (customersData.data && Array.isArray(customersData.data)) {
+        setCustomers(customersData.data);
+      } else if (Array.isArray(customersData)) {
+        setCustomers(customersData);
+      } else {
+        console.warn('Invalid customers data structure:', customersData);
+      }
     } catch (err) {
-      setError('Failed to fetch data');
+      setError(`Failed to fetch data: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -88,9 +129,12 @@ export const CreateOrder: React.FC = () => {
     if (field === 'productId' && value) {
       const product = products.find(p => p.id === value);
       if (product) {
-        updatedItems[index].productName = product.brand_name;
-        updatedItems[index].rate = product.rate_usd;
-        updatedItems[index].amount = product.rate_usd * (updatedItems[index].quantity || 0);
+        // Handle both data structures (camelCase and snake_case)
+        const brandName = product.brandName || product.brand_name || '';
+        const rate = product.unitPrice || product.rate_usd || 0;
+        updatedItems[index].productName = brandName;
+        updatedItems[index].rate = rate;
+        updatedItems[index].amount = rate * (updatedItems[index].quantity || 0);
       }
     }
 
@@ -260,6 +304,7 @@ export const CreateOrder: React.FC = () => {
               </div>
             </div>
 
+
             {/* Order Items */}
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -290,11 +335,26 @@ export const CreateOrder: React.FC = () => {
                                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="">Select Product</option>
-                        {products.map((product) => (
-                          <option key={product.id} value={product.id}>
-                            {product.brand_name} - {product.generic_name}
-                          </option>
-                        ))}
+                        {products.map((product) => {
+                          // Handle both data structures (camelCase and snake_case)
+                          const brandName = product.brandName || product.brand_name || '';
+                          const genericName = product.genericName || product.generic_name || '';
+                          
+                          // Skip products with empty names
+                          if (!brandName && !genericName) {
+                            return null;
+                          }
+                          
+                          const displayName = brandName && genericName 
+                            ? `${brandName} - ${genericName}`
+                            : brandName || genericName || 'Unknown Product';
+                          
+                          return (
+                            <option key={product.id} value={product.id}>
+                              {displayName}
+                            </option>
+                          );
+                        }).filter(Boolean)}
                       </select>
                     </div>
 

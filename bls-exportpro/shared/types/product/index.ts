@@ -1,12 +1,34 @@
 import { z } from 'zod';
 
+export const ProductPricingSchema = z.object({
+  id: z.string().uuid(),
+  productId: z.string().uuid(),
+  priceType: z.enum(['selling', 'procurement', 'market']),
+  basePrice: z.number().positive(),
+  currency: z.enum(['INR']),
+  effectiveFrom: z.date(),
+  effectiveTo: z.date().optional(),
+  isActive: z.boolean().default(true),
+  margin: z.number().optional(), // percentage
+  discountable: z.boolean().default(true),
+  notes: z.string().optional(),
+  approvedBy: z.string().optional(),
+  createdBy: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type ProductPricing = z.infer<typeof ProductPricingSchema>;
+
 export const ProductSchema = z.object({
   id: z.string().uuid(),
+  productCode: z.string().min(1, 'Product code is required'),
   brandName: z.string().min(1, 'Brand name is required'),
   genericName: z.string().min(1, 'Generic name is required'),
   strength: z.string().min(1, 'Strength is required'),
   packSize: z.string().min(1, 'Pack size is required'),
-  HSNCode: z.string().regex(/^\d{4,8}$/, 'HSN Code must be 4-8 digits'),
+  manufacturer: z.string().min(1, 'Manufacturer is required'),
+  hsnCode: z.string().regex(/^\d{4,8}$/, 'HSN Code must be 4-8 digits'),
   therapeuticCategory: z.string().optional(),
   dosageForm: z.string(),
   activeIngredients: z.array(z.object({
@@ -15,9 +37,20 @@ export const ProductSchema = z.object({
     unit: z.string()
   })).optional(),
   shelfLife: z.number().min(1).max(60), // months
-  storageConditions: z.string(),
+  storageConditions: z.string().optional(),
   isScheduledDrug: z.boolean().default(false),
   scheduleCategory: z.string().optional(),
+  // Legacy pricing fields for backward compatibility
+  unitPrice: z.number().positive().optional(),
+  currency: z.enum(['INR', 'USD']).optional(),
+  // New pricing structure
+  pricing: z.array(ProductPricingSchema).optional(),
+  // Admin controls
+  requiresApproval: z.boolean().default(true),
+  approvalStatus: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+  approvedBy: z.string().optional(),
+  approvalDate: z.date().optional(),
+  createdBy: z.string(),
   createdAt: z.date(),
   updatedAt: z.date()
 });

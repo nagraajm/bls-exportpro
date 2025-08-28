@@ -180,18 +180,120 @@ export class InvoiceService {
   }
   
   async getInvoice(id: string): Promise<Invoice> {
-    const invoice = await repositories.invoice.findById(id);
-    if (!invoice) {
+    try {
+      // First try to get from repositories (JSON-based)
+      const invoice = await repositories.invoice.findById(id);
+      if (invoice) {
+        invoice.order = await repositories.order.findById(invoice.orderId) || undefined;
+        if (invoice.order) {
+          invoice.order.customer = await repositories.customer.findById(invoice.order.customerId) || undefined;
+          for (const item of invoice.order.items) {
+            item.product = await repositories.product.findById(item.productId) || undefined;
+          }
+        }
+        return invoice;
+      }
+    } catch (error) {
+      console.log('Repository lookup failed, trying SQLite:', error);
+    }
+
+    // If not found in repositories, try SQLite database directly
+    const { getDatabase } = require('../config/sqlite.config');
+    const db = await getDatabase();
+    
+    const invoiceRow = await db.get(`
+      SELECT i.*, o.order_number, o.customer_id, o.total_amount as order_total,
+             c.company_name, c.contact_person, c.address, c.city, c.country, c.phone, c.email
+      FROM invoices i
+      LEFT JOIN orders o ON i.order_id = o.id
+      LEFT JOIN customers c ON o.customer_id = c.id
+      WHERE i.id = ?
+    `, [id]);
+    
+    if (!invoiceRow) {
       throw new AppError(404, 'Invoice not found');
     }
-    
-    invoice.order = await repositories.order.findById(invoice.orderId) || undefined;
-    if (invoice.order) {
-      invoice.order.customer = await repositories.customer.findById(invoice.order.customerId) || undefined;
-      for (const item of invoice.order.items) {
-        item.product = await repositories.product.findById(item.productId) || undefined;
+
+    const orderItems = await db.all(`
+      SELECT oi.*, p.brand_name, p.generic_name, p.strength, p.unit_pack, p.rate_usd
+      FROM order_items oi
+      LEFT JOIN products p ON oi.product_id = p.id
+      WHERE oi.order_id = ?
+      ORDER BY p.brand_name
+    `, [invoiceRow.order_id]);
+
+    // Convert SQLite row to Invoice format
+    const invoice: Invoice = {
+      id: invoiceRow.id,
+      invoiceNumber: invoiceRow.invoice_number,
+      invoiceType: invoiceRow.invoice_type as any,
+      orderId: invoiceRow.order_id,
+      invoiceDate: new Date(invoiceRow.invoice_date),
+      dueDate: invoiceRow.due_date ? new Date(invoiceRow.due_date) : undefined,
+      subtotal: invoiceRow.subtotal || invoiceRow.total_amount,
+      igst: invoiceRow.igst || 0,
+      drawback: invoiceRow.drawback || 0,
+      rodtep: invoiceRow.rodtep || 0,
+      totalAmount: invoiceRow.total_amount,
+      currency: invoiceRow.currency,
+      bankDetails: CONSTANTS.BANK_DETAILS.primary,
+      termsAndConditions: this.getDefaultTerms(invoiceRow.invoice_type),
+      createdAt: new Date(invoiceRow.created_at || new Date()),
+      updatedAt: new Date(invoiceRow.updated_at || new Date()),
+      order: {
+        id: invoiceRow.order_id,
+        orderNumber: invoiceRow.order_number,
+        customerId: invoiceRow.customer_id,
+        orderDate: new Date(),
+        status: 'confirmed',
+        subtotal: invoiceRow.order_total || invoiceRow.total_amount,
+        igst: 0,
+        drawback: 0,
+        rodtep: 0,
+        totalAmount: invoiceRow.order_total || invoiceRow.total_amount,
+        currency: invoiceRow.currency,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        customer: {
+          id: invoiceRow.customer_id,
+          companyName: invoiceRow.company_name,
+          contactPerson: invoiceRow.contact_person,
+          email: invoiceRow.email,
+          phone: invoiceRow.phone,
+          address: {
+            street: invoiceRow.address || 'Unknown',
+            city: invoiceRow.city || 'Unknown',
+            state: 'Unknown',
+            country: invoiceRow.country || 'Unknown',
+            postalCode: '00000'
+          },
+          taxId: 'UNKNOWN',
+          currency: invoiceRow.currency,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        items: orderItems.map((item: any) => ({
+          productId: item.product_id,
+          quantity: item.quantity,
+          unitPrice: item.rate || item.rate_usd || 0,
+          totalPrice: item.amount || (item.quantity * (item.rate || item.rate_usd || 0)),
+          batchNumber: item.batch_number || 'BATCH-001',
+          expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          product: {
+            id: item.product_id,
+            brandName: item.brand_name || 'Unknown Product',
+            genericName: item.generic_name || 'Generic',
+            strength: item.strength || '1mg',
+            dosageForm: 'Tablet',
+            packSize: item.unit_pack || '10x10',
+            manufacturer: 'BLS Pharmaceuticals',
+            hsCode: '30049099',
+            rateUSD: item.rate_usd || 0,
+            rateINR: (item.rate_usd || 0) * 80
+          }
+        }))
       }
-    }
+    };
     
     return invoice;
   }

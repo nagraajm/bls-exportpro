@@ -59,14 +59,12 @@ export class InvoiceGeneratorService {
     await db.run(`
       INSERT INTO invoices (
         id, order_id, invoice_number, invoice_date, invoice_type, 
-        total_amount, currency, port_of_loading, port_of_discharge, 
-        place_of_delivery, payment_terms
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        total_amount, currency, subtotal, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
-      invoiceId, orderId, invoiceNumber, invoiceDate, invoiceType.toLowerCase(),
-      order.total_amount, 'INR',
-      'NHAVA SHEVA/MUMBAI', 'LAEM CHABANG, THAILAND', 'YANGON VIA THAI-MYANMAR BORDER',
-      'ADVANCE'
+      invoiceId, orderId, invoiceNumber, invoiceDate, 
+      invoiceType.toLowerCase().replace(' ', '_'),
+      order.total_amount, 'INR', order.total_amount, 'generated'
     ]);
     
     // Load logo

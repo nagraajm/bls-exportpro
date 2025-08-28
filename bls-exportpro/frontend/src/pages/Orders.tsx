@@ -52,19 +52,29 @@ interface OrderItem {
 
 interface Customer {
   id: string;
-  name: string;
-  country: string;
-  email: string;
-  phone: string;
+  name?: string;
+  company_name?: string;
+  companyName?: string;
+  country?: string;
+  city?: string;
+  email?: string;
+  phone?: string;
 }
 
 interface Product {
   id: string;
-  name: string;
-  price: number;
-  currency: string;
-  hsCode: string;
-  stock: number;
+  name?: string;
+  brandName?: string;
+  genericName?: string;
+  brand_name?: string;
+  generic_name?: string;
+  price?: number;
+  unitPrice?: number;
+  rate_usd?: number;
+  currency?: string;
+  hsCode?: string;
+  hsnCode?: string;
+  stock?: number;
 }
 
 const Orders: React.FC = () => {
@@ -79,8 +89,9 @@ const Orders: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [formData, setFormData] = useState<Partial<Order>>({
     customerId: '',
+    orderNumber: '',
     items: [],
-    currency: 'USD',
+    currency: 'INR',
     status: 'pending',
     paymentStatus: 'pending'
   });
@@ -168,7 +179,7 @@ const Orders: React.FC = () => {
         totalAmount: formData.items?.reduce((sum, item) => sum + item.totalPrice, 0) || 0
       };
       
-      await api.post('/orders/create', orderData);
+      await api.post('/order-creation/create', orderData);
       await fetchOrders();
       setShowOrderForm(false);
       resetForm();
@@ -188,6 +199,30 @@ const Orders: React.FC = () => {
     }
   };
 
+  const handleApproveOrder = async (orderId: string) => {
+    if (window.confirm('Are you sure you want to approve this order?')) {
+      try {
+        await api.put(`/orders/${orderId}/status`, { status: 'confirmed' });
+        await fetchOrders();
+      } catch (error) {
+        console.error('Error approving order:', error);
+        alert('Failed to approve order');
+      }
+    }
+  };
+
+  const handleProcessOrder = async (orderId: string) => {
+    if (window.confirm('Start processing this order?')) {
+      try {
+        await api.put(`/orders/${orderId}/status`, { status: 'processing' });
+        await fetchOrders();
+      } catch (error) {
+        console.error('Error processing order:', error);
+        alert('Failed to start processing order');
+      }
+    }
+  };
+
   const handleGenerateInvoice = async (orderId: string) => {
     try {
       // Prefer SQLite-backed generator for PDF + record
@@ -201,6 +236,7 @@ const Orders: React.FC = () => {
         alert('Invoice generated successfully!');
       } catch (e) {
         console.error('Fallback invoice generation failed:', e);
+        alert('Failed to generate invoice');
       }
     }
   };
@@ -208,8 +244,9 @@ const Orders: React.FC = () => {
   const resetForm = () => {
     setFormData({
       customerId: '',
+      orderNumber: '',
       items: [],
-      currency: 'USD',
+      currency: 'INR',
       status: 'pending',
       paymentStatus: 'pending'
     });
@@ -239,9 +276,14 @@ const Orders: React.FC = () => {
     if (field === 'productId') {
       const product = products.find(p => p.id === value);
       if (product) {
-        newItems[index].productName = product.name;
-        newItems[index].unitPrice = product.price;
-        newItems[index].hsCode = product.hsCode;
+        // Handle multiple data structures
+        const productName = product.name || product.brandName || product.brand_name || 'Unknown Product';
+        const productPrice = product.price || product.unitPrice || product.rate_usd || 0;
+        const hsCode = product.hsCode || product.hsnCode || '';
+        
+        newItems[index].productName = productName;
+        newItems[index].unitPrice = productPrice;
+        newItems[index].hsCode = hsCode;
       }
     }
     
@@ -461,6 +503,28 @@ const Orders: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
+                        {/* Approve/Confirm Button for pending orders */}
+                        {order.status === 'pending' && (
+                          <button
+                            onClick={() => handleApproveOrder(order.id)}
+                            className="p-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
+                            title="Approve Order"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                        
+                        {/* Processing Button for confirmed orders */}
+                        {order.status === 'confirmed' && (
+                          <button
+                            onClick={() => handleProcessOrder(order.id)}
+                            className="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                            title="Start Processing"
+                          >
+                            <Package className="w-4 h-4" />
+                          </button>
+                        )}
+
                         <button
                           onClick={() => {
                             setSelectedOrder(order);
@@ -517,36 +581,42 @@ const Orders: React.FC = () => {
                       value={formData.customerId}
                       onChange={(e) => {
                         const customer = customers.find(c => c.id === e.target.value);
+                        const customerName = customer?.name || customer?.companyName || customer?.company_name || '';
+                        const customerCountry = customer?.country || '';
                         setFormData({ 
                           ...formData, 
                           customerId: e.target.value,
-                          customerName: customer?.name || '',
-                          customerCountry: customer?.country || ''
+                          customerName,
+                          customerCountry
                         });
                       }}
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                     >
                       <option value="">Select a customer...</option>
-                      {customers.map((customer) => (
-                        <option key={customer.id} value={customer.id}>
-                          {customer.name} - {customer.country}
-                        </option>
-                      ))}
+                      {customers.map((customer) => {
+                        const customerName = customer.name || customer.companyName || customer.company_name || 'Unknown Customer';
+                        const customerCountry = customer.country || 'Unknown Country';
+                        return (
+                          <option key={customer.id} value={customer.id}>
+                            {customerName} - {customerCountry}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Currency
+                      Order Number *
                     </label>
-                    <select
-                      value={formData.currency}
-                      onChange={(e) => setFormData({ ...formData, currency: e.target.value as 'USD' | 'INR' })}
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
-                    >
-                      <option value="USD">USD</option>
-                      <option value="INR">INR</option>
-                    </select>
+                    <input
+                      type="text"
+                      value={formData.orderNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
+                      placeholder="e.g., ORD-2025-004"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40 placeholder-gray-400"
+                      required
+                    />
                   </div>
                 </div>
 
@@ -578,11 +648,20 @@ const Orders: React.FC = () => {
                                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:border-white/40"
                               >
                                 <option value="">Select product...</option>
-                                {products.map((product) => (
-                                  <option key={product.id} value={product.id}>
-                                    {product.name} - {product.currency} {product.price}
-                                  </option>
-                                ))}
+                                {products.map((product) => {
+                                  // Handle multiple data structures
+                                  const productName = product.name || product.brandName || product.brand_name || 'Unknown Product';
+                                  const genericName = product.genericName || product.generic_name || '';
+                                  const displayName = genericName ? `${productName} - ${genericName}` : productName;
+                                  const price = product.price || product.unitPrice || product.rate_usd || 0;
+                                  const currency = product.currency || 'INR';
+                                  
+                                  return (
+                                    <option key={product.id} value={product.id}>
+                                      {displayName} - {currency} {price}
+                                    </option>
+                                  );
+                                })}
                               </select>
                             </div>
                             
@@ -600,7 +679,7 @@ const Orders: React.FC = () => {
                               <div className="flex-1">
                                 <label className="block text-sm text-gray-400 mb-1">Total</label>
                                 <div className="px-3 py-2 bg-white/5 rounded-lg text-white">
-                                  {formData.currency === 'USD' ? '$' : '₹'}{item.totalPrice.toLocaleString()}
+                                  ₹{item.totalPrice.toLocaleString()}
                                 </div>
                               </div>
                               <button
@@ -626,7 +705,7 @@ const Orders: React.FC = () => {
                   <div className="bg-white/10 rounded-lg p-4">
                     <p className="text-gray-400 mb-1">Total Amount</p>
                     <p className="text-2xl font-bold text-white">
-                      {formData.currency === 'USD' ? '$' : '₹'}
+                      ₹
                       {(formData.items?.reduce((sum, item) => sum + item.totalPrice, 0) || 0).toLocaleString()}
                     </p>
                   </div>
@@ -646,7 +725,7 @@ const Orders: React.FC = () => {
                   <Button
                     variant="primary"
                     onClick={handleCreateOrder}
-                    disabled={!formData.customerId || !formData.items?.length}
+                    disabled={!formData.customerId || !formData.orderNumber || !formData.items?.length}
                   >
                     Create Order
                   </Button>

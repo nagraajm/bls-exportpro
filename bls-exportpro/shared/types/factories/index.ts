@@ -1,21 +1,22 @@
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  Product, BatchInfo, PackagingMaterial,
-  Customer, Supplier, Manufacturer,
-  Invoice, PackingList, PurchaseOrder,
-  Registration, ComplianceStatus,
-  ExchangeRate, PaymentTerms, Calculation,
-  ExportMetrics, RegulatoryMetrics, InventoryMetrics
+  Product, BatchInfo,
+  Customer, Supplier,
+  Invoice,
+  Registration,
+  ExchangeRate, Calculation
 } from '../index';
 
 export const createProduct = (overrides?: Partial<Product>): Product => ({
   id: uuidv4(),
+  productCode: faker.string.alphanumeric(6).toUpperCase(),
   brandName: faker.commerce.productName(),
   genericName: faker.science.chemicalElement().name,
   strength: `${faker.number.int({ min: 10, max: 500 })}mg`,
   packSize: `${faker.number.int({ min: 10, max: 100 })} ${faker.helpers.arrayElement(['tablets', 'capsules', 'vials'])}`,
-  HSNCode: faker.string.numeric(8),
+  manufacturer: faker.company.name(),
+  hsnCode: faker.string.numeric(8),
   therapeuticCategory: faker.helpers.arrayElement(['Antibiotics', 'Analgesics', 'Cardiovascular', 'Diabetes']),
   dosageForm: faker.helpers.arrayElement(['Tablet', 'Capsule', 'Injection', 'Syrup']),
   activeIngredients: [
@@ -29,6 +30,9 @@ export const createProduct = (overrides?: Partial<Product>): Product => ({
   storageConditions: faker.helpers.arrayElement(['Store below 25°C', 'Store in cool dry place', 'Refrigerate']),
   isScheduledDrug: faker.datatype.boolean(),
   scheduleCategory: faker.helpers.arrayElement(['Schedule H', 'Schedule X', undefined]),
+  requiresApproval: true,
+  approvalStatus: faker.helpers.arrayElement(['pending', 'approved', 'rejected']),
+  createdBy: faker.person.firstName() + ' ' + faker.person.lastName(),
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
   ...overrides
@@ -165,7 +169,7 @@ export const createInvoice = (customerId?: string, overrides?: Partial<Invoice>)
       unitPrice,
       currency: 'USD' as const,
       totalPrice,
-      HSNCode: faker.string.numeric(8),
+      hsnCode: faker.string.numeric(8),
       taxRate,
       taxAmount,
       discount,

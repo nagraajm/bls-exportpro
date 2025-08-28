@@ -34,6 +34,11 @@ router.put(
   orderController.updateOrder
 );
 
+router.put(
+  '/:id/status',
+  orderController.updateOrderStatus
+);
+
 router.delete(
   '/:id',
   validate(getOrderSchema),

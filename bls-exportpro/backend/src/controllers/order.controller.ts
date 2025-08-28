@@ -80,6 +80,54 @@ export const updateOrder = asyncHandler(async (
   });
 });
 
+export const updateOrderStatus = asyncHandler(async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status || !['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].includes(status)) {
+    res.status(400).json({
+      status: 'error',
+      message: 'Invalid status value'
+    });
+    return;
+  }
+
+  try {
+    // For now, update the order using a simple SQLite update
+    // In a full implementation, you'd use the orderService
+    const { getDatabase } = require('../config/sqlite.config');
+    const db = await getDatabase();
+    
+    const result = await db.run(
+      'UPDATE orders SET status = ? WHERE id = ?',
+      [status, id]
+    );
+
+    if (result.changes === 0) {
+      res.status(404).json({
+        status: 'error',
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    res.json({
+      status: 'success',
+      message: 'Order status updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to update order status',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 export const deleteOrder = asyncHandler(async (
   req: Request<GetOrderInput['params']>,
   res: Response,

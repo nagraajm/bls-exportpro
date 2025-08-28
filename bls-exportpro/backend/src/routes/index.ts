@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import productRoutes from './products';
+import productPricingRoutes from './product-pricing.routes';
 import customerRoutes from './customers';
 import orderRoutes from './order.routes';
 import excelRoutes from './excel.routes';
@@ -13,6 +14,7 @@ import dashboardRoutes from './dashboard.routes';
 const router = Router();
 
 router.use('/products', productRoutes);
+router.use('/product-pricing', productPricingRoutes);
 router.use('/customers', customerRoutes);
 router.use('/orders', orderRoutes);
 router.use('/excel', excelRoutes);
