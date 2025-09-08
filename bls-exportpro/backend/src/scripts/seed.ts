@@ -87,7 +87,19 @@ async function seedData() {
   
   const createdProducts = [];
   for (const product of products) {
-    const created = await repositories.product.create(product);
+        const productDb = {
+      id: uuidv4(),
+      brand_name: product.brandName,
+      generic_name: product.genericName,
+      strength: product.strength,
+      unit_pack: product.packSize,
+      pack_size: parseFloat(product.packSize) || 0,
+      rate_usd: product.unitPrice,
+      hs_code: product.hsnCode,
+      batch_prefix: product.productCode,
+      created_at: new Date().toISOString()
+    };
+    const created = await repositories.product.create(productDb);
     createdProducts.push(created);
     console.log(`✅ Created product: ${created.brandName} (${created.genericName})`);
   }

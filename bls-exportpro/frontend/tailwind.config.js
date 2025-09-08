@@ -8,6 +8,30 @@ export default {
   theme: {
     extend: {
       colors: {
+        light: {
+          background: '#ffffff',
+          surface: '#f8fafc',
+          primary: '#2563eb',
+          text: '#1f2937',
+          heading: '#111827',
+          subheading: '#374151',
+          border: '#e5e7eb',
+          input: '#f3f4f6',
+          hover: '#f9fafb',
+          muted: '#6b7280'
+        },
+        dark: {
+          background: '#1f2937',
+          surface: '#1a1f2e',
+          primary: '#3b82f6',
+          text: '#f3f4f6',
+          heading: '#f9fafb',
+          subheading: '#e5e7eb',
+          border: '#374151',
+          input: '#374151',
+          hover: '#293445',
+          muted: '#9ca3af'
+        },
         // BLS Brand Colors from Logo
         bls: {
           blue: {
@@ -28,7 +52,15 @@ export default {
           DEFAULT: 'rgba(255, 255, 255, 0.12)',
           medium: 'rgba(255, 255, 255, 0.16)',
           heavy: 'rgba(255, 255, 255, 0.20)',
-        }
+        },
+        light: {
+          background: '#ffffff', // Light mode background
+          text: '#1f2937', // Light mode text color
+          primary: '#2563eb', // Primary color for light mode
+          secondary: '#1e40af', // Secondary color for light mode
+          accent: '#f97316', // Accent color for light mode
+          muted: '#e5e7eb', // Muted color for borders or less important elements
+        },
       },
       backdropBlur: {
         xs: '2px',

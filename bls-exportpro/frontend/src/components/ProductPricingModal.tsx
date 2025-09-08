@@ -50,8 +50,8 @@ export const ProductPricingModal: React.FC<ProductPricingModalProps> = ({
   const fetchPricingHistory = async () => {
     setLoading(true);
     try {
-      const data = await api.get(`/product-pricing/product/${productId}/history`);
-      setPricingHistory(data.data || []);
+      const data = await api.get<{ data: any[] }>(`/product-pricing/product/${productId}/history`);
+      setPricingHistory(data?.data || []);
     } catch (error) {
       console.error('Failed to fetch pricing history:', error);
     } finally {

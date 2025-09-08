@@ -191,7 +191,10 @@ export const createInvoice = (customerId?: string, overrides?: Partial<Invoice>)
     customerId: customerId || uuidv4(),
     buyerOrderNo: `PO${faker.string.numeric(6)}`,
     buyerOrderDate: faker.date.past(),
-    items,
+    items: items.map(item => ({
+      ...item,
+      HSNCode: item.hsnCode
+    })),
     currency: 'USD',
     exchangeRate: faker.number.float({ min: 70, max: 85, fractionDigits: 2 }),
     subtotal,

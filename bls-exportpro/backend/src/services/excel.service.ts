@@ -4,6 +4,7 @@ import { Product, Customer, Order, ExcelImportResult } from '../../../shared/typ
 import { repositories } from '../repositories';
 import path from 'path';
 import fs from 'fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ExcelService {
   async importProducts(filePath: string): Promise<ExcelImportResult> {
@@ -19,16 +20,16 @@ export class ExcelService {
       try {
         const row: any = data[i];
         await repositories.product.create({
-          productCode: row['Product Code'] || `PROD-${Date.now()}-${i}`,
-          brandName: row['Brand Name'] || row['Product Name'],
-          genericName: row['Generic Name'] || row['Composition'],
+          id: uuidv4(),
+          batch_prefix: row['Product Code'] || `PROD-${Date.now()}-${i}`,
+          brand_name: row['Brand Name'] || row['Product Name'],
+          generic_name: row['Generic Name'] || row['Composition'],
           strength: row['Strength'] || '',
-          dosageForm: row['Dosage Form'] || row['Form'],
-          packSize: row['Pack Size'] || row['Packing'],
-          manufacturer: row['Manufacturer'] || 'Unknown',
-          hsnCode: row['HSN Code'] || '',
-          unitPrice: parseFloat(row['Price'] || row['Unit Price'] || '0'),
-          currency: row['Currency'] || 'USD',
+          unit_pack: row['Pack Size'] || row['Packing'],
+          pack_size: parseFloat(row['Pack Size'] || row['Packing'] || '0'),
+          rate_usd: parseFloat(row['Price'] || row['Unit Price'] || '0'),
+          hs_code: row['HSN Code'] || '',
+          created_at: new Date().toISOString()
         });
         successfulRecords++;
       } catch (error) {

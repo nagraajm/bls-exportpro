@@ -29,6 +29,10 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   const [displayValue, setDisplayValue] = useState(0);
   const numericValue = typeof value === 'number' ? value : parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
 
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
   useEffect(() => {
     if (animate && typeof value === 'number') {
       const duration = 1500;
@@ -64,8 +68,10 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
               {prefix}
               {animate && typeof value === 'number' 
-                ? displayValue.toLocaleString(undefined, { maximumFractionDigits: 0 })
-                : value
+                ? formatNumber(Math.round(displayValue))
+                : typeof value === 'number' 
+                  ? formatNumber(value)
+                  : value
               }
               {suffix}
             </h3>

@@ -8,9 +8,9 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ title, children, className = '' }) => {
   return (
-    <div className={`glass rounded-lg p-6 gradient-shadow ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg dark:shadow-none border border-light-border dark:border-dark-border ${className}`}>
       {title && (
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">{title}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-light-heading dark:text-dark-heading">{title}</h2>
       )}
       {children}
     </div>

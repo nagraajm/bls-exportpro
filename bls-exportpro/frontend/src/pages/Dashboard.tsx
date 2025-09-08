@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
     { status: 'Cancelled', count: 12, color: '#EF4444' },
   ];
 
-  const exportValue = 101234567;
+  const exportValue = 101234567; // This will be formatted as 101,234,567
   const currencySymbol = '₹';
 
   return (
@@ -170,8 +170,9 @@ const Dashboard: React.FC = () => {
                 label={({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) => {
                   const RADIAN = Math.PI / 180;
                   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  const angle = midAngle || 0;
+                  const x = cx + radius * Math.cos(-angle * RADIAN);
+                  const y = cy + radius * Math.sin(-angle * RADIAN);
                   
                   return (
                     <text 

@@ -49,8 +49,8 @@ export const ProductApprovalModal: React.FC<ProductApprovalModalProps> = ({
   const fetchPendingProducts = async () => {
     setLoading(true);
     try {
-      const data = await api.get('/products/admin/pending-approvals');
-      setPendingProducts(data.data || []);
+      const data = await api.get<{ data: any[] }>('/products/admin/pending-approvals');
+      setPendingProducts(data?.data || []);
     } catch (error) {
       console.error('Failed to fetch pending products:', error);
     } finally {

@@ -2,41 +2,143 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/typography.css';
+@import './styles/components.css';
+
 @layer base {
+  /* GLOBAL THEME VARIABLES */
   :root {
-    /* BLS Brand Colors from Logo */
+    /* Text & Background Colors (Default: Light Mode) */
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f4f6;
+    --border-color: #e5e7eb;
+    --accent-color: #2563eb;
+
+    /* BLS Brand Colors */
     --bls-blue-primary: #2563eb;
     --bls-blue-secondary: #1e40af;
     --bls-blue-light: #60a5fa;
     --bls-orange: #f97316;
     --bls-purple: #7c3aed;
     --bls-teal: #06b6d4;
-    
-    /* Theme Colors */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
+
+    --border-primary: rgba(0, 0, 0, 0.12);
+    --glass-bg: rgba(248, 250, 252, 0.75);
+  }
+
+  .dark {
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-muted: #9ca3af;
+    --bg-primary: #1f2937;
+    --bg-secondary: #111827;
+    --border-color: #374151;
+    --accent-color: #3b82f6;
     --border-primary: rgba(255, 255, 255, 0.1);
     --glass-bg: rgba(255, 255, 255, 0.1);
   }
 
+  body {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+  }
+
+  input, select, textarea {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+  }
+
+  a {
+    color: var(--accent-color);
+  }
+
+  button {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+  }
+}
+
   .light {
-    --bg-primary: #f8fafc;
+    --text-primary: #000000;
+    --text-secondary: #333333;
+    --bg-primary: #ffffff;
     --bg-secondary: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
     --border-primary: rgba(0, 0, 0, 0.12);
     --glass-bg: rgba(248, 250, 252, 0.75);
   }
 
   .light body {
-    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #cbd5e1 100%);
+    background-color: var(--bg-primary);
     color: var(--text-primary);
   }
 
+/* ============================= */
+/* ✅ Strong Light Mode Overrides */
+/* ============================= */
+
+/* Headings */
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light h5,
+.light h6 {
+  color: var(--text-primary) !important;
+}
+
+/* Generic text containers */
+.light p,
+.light span,
+.light div,
+.light strong,
+.light b {
+  color: var(--text-primary) !important;
+}
+
+/* Tables */
+.light table th,
+.light table td {
+  color: var(--text-primary) !important;
+}
+
+/* Specific business sections */
+.light .customer-name,
+.light .order-number,
+.light .invoice-number,
+.light .packing-list-number,
+.light .report-title {
+  color: var(--text-primary) !important;
+}
+
+/* Inputs & labels */
+.light label,
+.light input,
+.light select,
+.light textarea {
+  color: var(--text-primary) !important;
+}
+
+/* Placeholder text */
+.light input::placeholder,
+.light textarea::placeholder {
+  color: var(--text-secondary) !important;
+}
+
   body {
-    @apply min-h-screen antialiased transition-colors duration-300;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: color 0.3s, background-color 0.3s;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     position: relative;
@@ -86,31 +188,35 @@
   .light body::after {
     opacity: 0.08;
   }
-}
 
 @layer components {
   .glass {
-    @apply backdrop-blur-xl transition-all duration-300;
+    backdrop-filter: blur(16px);
+    transition: all 0.3s;
     background: var(--glass-bg);
     border: 1px solid var(--border-primary);
   }
 
   .glass-card {
-    @apply glass rounded-2xl p-6;
-    box-shadow: 
-      0 8px 32px rgba(31, 38, 135, 0.2),
-      inset 0 1px 1px var(--border-primary),
-      inset 0 -1px 1px var(--border-primary);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    backdrop-filter: blur(16px);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-primary);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
+                inset 0 1px 1px var(--border-primary),
+                inset 0 -1px 1px var(--border-primary);
     position: relative;
+    color: var(--text-primary);
   }
 
   .light .glass-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.85) 100%);
+    background: rgba(255, 255, 255, 0.9); /* Ensure glass cards are visible */
     box-shadow: 
       0 8px 32px rgba(0, 0, 0, 0.08),
       0 4px 12px rgba(0, 0, 0, 0.04),
       inset 0 1px 1px rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Add border for better visibility */
   }
 
   .bls-gradient-primary {
@@ -137,6 +243,9 @@
       rgba(255, 255, 255, 0.05)
     );
     -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
       linear-gradient(#fff 0 0) content-box, 
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -187,20 +296,23 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-900/50;
+    background-color: rgba(17, 24, 39, 0.5);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/20 rounded-full border-2 border-gray-900/50;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    border: 2px solid rgba(17, 24, 39, 0.5);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/25;
+    background-color: rgba(255, 255, 255, 0.25);
   }
 
   /* Selection styling */
   ::selection {
-    @apply bg-primary/30 text-white;
+    background-color: rgba(37, 99, 235, 0.3);
+    color: #ffffff;
   }
 
   /* Fix for Recharts hover backgrounds */
@@ -222,5 +334,9 @@
   
   .recharts-layer:hover {
     background: transparent !important;
+  }
+
+  .light .recharts-layer:hover {
+    background: rgba(0, 0, 0, 0.05) !important; /* Ensure hover effects are visible */
   }
 }

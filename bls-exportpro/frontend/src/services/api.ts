@@ -1,6 +1,13 @@
 const API_BASE_URL = 'http://localhost:5001/api';
 
 export class ApiService {
+  async patch<T>(url: string, data?: any): Promise<T> {
+    return this.request<T>(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
   private async request<T>(url: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
