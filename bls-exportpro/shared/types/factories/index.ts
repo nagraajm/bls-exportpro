@@ -198,7 +198,7 @@ export const createInvoice = (customerId?: string, overrides?: Partial<Invoice>)
     currency: 'USD',
     exchangeRate: faker.number.float({ min: 70, max: 85, fractionDigits: 2 }),
     subtotal,
-    totalTax,
+    totalTax, 
     shippingCharges,
     otherCharges,
     totalAmount,
