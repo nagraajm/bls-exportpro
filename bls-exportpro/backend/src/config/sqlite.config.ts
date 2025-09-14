@@ -7,7 +7,7 @@ let db: Database | null = null;
 export async function initDatabase(): Promise<Database> {
   if (db) return db;
 
-  const dbPath = path.join(__dirname, '../../data/pharma.db');
+  const dbPath = path.join(process.cwd(), 'data/pharma.db');
   
   db = await open({
     filename: dbPath,
