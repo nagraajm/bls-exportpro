@@ -316,9 +316,79 @@ curl -X GET "https://blsexport.nmdevai.com/api/invoices/ORD-2024-001/download?ty
 4. **TypeScript Compilation**: Production builds require all @types packages even though not used at runtime
 5. **Database State**: Empty SQLite files cause application crashes - always seed after deployment
 
-## Recent Updates (August 2025)
+## Recent Updates (September 2025)
 
-### Major Bug Fixes & Features (Latest)
+### Critical Production Fixes (September 14, 2025) - LATEST SESSION
+**Session Duration:** 19+ hours  
+**Status:** ✅ ALL ISSUES RESOLVED  
+**Production URL:** https://blsexport.nmdevai.com - FULLY OPERATIONAL
+
+#### User-Reported Critical Issues (via Screenshots):
+1. **502 Bad Gateway Errors**: Products and Customers APIs failing
+2. **Light Theme Not Working**: Pages showing dark theme instead of light
+3. **Network Errors**: Invoice generator and order creation broken  
+4. **API Connection Issues**: Frontend unable to fetch data
+
+#### Root Causes Identified and Fixed:
+
+**1. Frontend Theme Issues**
+- **Problem:** CSS import order violation (@import after @tailwind)
+- **Files Fixed:** `frontend/src/index.css`, `ThemeContext.tsx`, `typography.css`
+- **Solution:** Reordered CSS imports, changed default theme to 'light', fixed Tailwind classes
+- **Result:** ✅ Light theme working perfectly
+
+**2. Nginx Proxy Misconfiguration**  
+- **Problem:** Nginx pointing to wrong backend port (6543 instead of 5001)
+- **File Fixed:** `/etc/nginx/sites-available/blsexport`
+- **Solution:** Updated proxy_pass to correct port and reloaded Nginx
+- **Result:** ✅ All APIs now returning 200 OK
+
+**3. SQLite Database Path Error**
+- **Problem:** Database path resolution using `__dirname` in compiled dist folder
+- **File Fixed:** `backend/src/config/sqlite.config.ts`
+- **Solution:** Changed to `process.cwd()` for absolute path resolution
+- **Result:** ✅ Database connection established
+
+**4. File Permissions & Database State**
+- **Problem:** Database owned by wrong user, needed recreation
+- **Solution:** Fixed permissions, recreated database with proper seeding
+- **Result:** ✅ 6 products, 2 customers, 3 invoices loaded successfully
+
+#### API Testing Results (All ✅ PASSING):
+```bash
+# Core APIs
+curl https://blsexport.nmdevai.com/api/products    # ✅ 6 products
+curl https://blsexport.nmdevai.com/api/customers   # ✅ 2 customers  
+curl https://blsexport.nmdevai.com/api/invoices    # ✅ 3 invoices
+curl https://blsexport.nmdevai.com/api/dashboard/metrics # ✅ Working
+
+# New Pharmaceutical Export Management APIs
+curl https://blsexport.nmdevai.com/api/brand-registrations # ✅ 2 brands
+curl https://blsexport.nmdevai.com/api/export-config/ports # ✅ 3 ports
+curl https://blsexport.nmdevai.com/api/export-config/shipping-methods # ✅ 3 methods
+curl https://blsexport.nmdevai.com/api/export-config/payment-terms # ✅ 6 terms
+
+# Health Check
+curl https://blsexport.nmdevai.com/health # ✅ Service healthy
+```
+
+#### Deployment Process Completed:
+1. ✅ Fixed all frontend build issues locally
+2. ✅ Deployed frontend with light theme fixes  
+3. ✅ Fixed backend database path and rebuilt
+4. ✅ Updated Nginx configuration on production
+5. ✅ Fixed database permissions and recreated with data
+6. ✅ Verified all 8+ APIs working correctly
+7. ✅ Confirmed complete application functionality
+
+#### Memory Documentation Created:
+- **File:** `/memory/session-2025-09-14-fixes.md`
+- **Content:** Complete session timeline, technical fixes, verification results
+- **Purpose:** Future reference and debugging assistance
+
+## Previous Updates (August 2025)
+
+### Major Bug Fixes & Features
 - **Order Management System Overhaul**: Fixed complete order workflow with approval buttons and status transitions
 - **Invoice Generation System**: Completely fixed PDF generation, download functionality, and SQLite schema mapping
 - **Create Order Functionality**: Added missing order number field and fixed API endpoint routing
