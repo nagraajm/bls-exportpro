@@ -1,0 +1,81 @@
+[
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440001",
+    "term": "CIF",
+    "description": "Cost, Insurance and Freight - Seller pays for cost, insurance and freight to the named port of destination",
+    "sellerResponsibilities": [
+      "Deliver goods to the ship at port of shipment",
+      "Pay for freight to destination port",
+      "Arrange and pay for minimum insurance coverage",
+      "Handle export customs clearance",
+      "Provide commercial invoice and packing list"
+    ],
+    "buyerResponsibilities": [
+      "Take delivery at destination port",
+      "Handle import customs clearance",
+      "Pay import duties and taxes",
+      "Arrange transport from port to final destination",
+      "Bear all risks after goods cross ship's rail"
+    ],
+    "riskTransferPoint": "When goods cross the ship's rail at port of shipment",
+    "applicableTransportModes": ["sea"],
+    "insuranceRequired": true,
+    "customsClearanceBy": "seller",
+    "commonUseCases": ["Traditional sea freight", "Buyer wants minimal responsibility at origin"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440002",
+    "term": "FOB",
+    "description": "Free On Board - Seller delivers when goods pass the ship's rail at the named port of shipment",
+    "sellerResponsibilities": [
+      "Deliver goods to the ship at port of shipment",
+      "Handle export customs clearance",
+      "Provide commercial invoice and packing list",
+      "Bear all costs until goods cross ship's rail"
+    ],
+    "buyerResponsibilities": [
+      "Arrange and pay for freight",
+      "Arrange and pay for insurance",
+      "Handle import customs clearance",
+      "Pay import duties and taxes",
+      "Take delivery at destination port"
+    ],
+    "riskTransferPoint": "When goods cross the ship's rail at port of shipment",
+    "applicableTransportModes": ["sea"],
+    "insuranceRequired": false,
+    "customsClearanceBy": "seller",
+    "commonUseCases": ["Buyer has good freight rates", "Buyer wants control over shipping"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440003",
+    "term": "EXW",
+    "description": "Ex Works - Seller makes goods available at their premises. Buyer responsible for all transport",
+    "sellerResponsibilities": [
+      "Make goods available at named premises",
+      "Package goods appropriately",
+      "Provide commercial invoice",
+      "Assist with export documentation if requested"
+    ],
+    "buyerResponsibilities": [
+      "Arrange all transportation",
+      "Handle export customs clearance",
+      "Handle import customs clearance",
+      "Pay all duties and taxes",
+      "Arrange and pay for insurance"
+    ],
+    "riskTransferPoint": "When goods are made available at seller's premises",
+    "applicableTransportModes": ["sea", "air", "road", "rail", "multimodal"],
+    "insuranceRequired": false,
+    "customsClearanceBy": "buyer",
+    "commonUseCases": ["Buyer has complete control over logistics", "Domestic sales"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

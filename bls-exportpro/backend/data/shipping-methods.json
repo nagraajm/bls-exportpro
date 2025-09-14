@@ -1,0 +1,93 @@
+[
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440001",
+    "name": "Sea Freight - FCL",
+    "mode": "sea",
+    "transitTime": {
+      "min": 7,
+      "max": 14,
+      "unit": "days"
+    },
+    "costStructure": {
+      "baseRate": 1500,
+      "currency": "USD",
+      "rateType": "flat_rate",
+      "additionalCharges": [
+        {
+          "name": "Documentation Charges",
+          "amount": 150,
+          "mandatory": true
+        },
+        {
+          "name": "Port Handling",
+          "amount": 200,
+          "mandatory": true
+        }
+      ]
+    },
+    "suitableFor": ["pharmaceuticals", "bulk"],
+    "restrictions": ["No hazardous materials"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440002",
+    "name": "Air Freight - Express",
+    "mode": "air",
+    "transitTime": {
+      "min": 2,
+      "max": 5,
+      "unit": "days"
+    },
+    "costStructure": {
+      "baseRate": 8.50,
+      "currency": "USD",
+      "rateType": "per_kg",
+      "additionalCharges": [
+        {
+          "name": "Fuel Surcharge",
+          "amount": 0.50,
+          "mandatory": true
+        },
+        {
+          "name": "Security Charge",
+          "amount": 0.25,
+          "mandatory": true
+        }
+      ]
+    },
+    "suitableFor": ["pharmaceuticals", "cold_chain", "fragile"],
+    "restrictions": ["Max 100kg per shipment for cold chain"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440003",
+    "name": "Road Transport - Truck",
+    "mode": "road",
+    "transitTime": {
+      "min": 5,
+      "max": 10,
+      "unit": "days"
+    },
+    "costStructure": {
+      "baseRate": 2.00,
+      "currency": "USD",
+      "rateType": "per_kg",
+      "additionalCharges": [
+        {
+          "name": "Border Clearance",
+          "amount": 100,
+          "mandatory": true
+        }
+      ]
+    },
+    "suitableFor": ["pharmaceuticals", "bulk"],
+    "restrictions": ["Regional transport only"],
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

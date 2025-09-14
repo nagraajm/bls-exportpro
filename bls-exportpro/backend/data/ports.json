@@ -1,0 +1,55 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "portName": "JNPT - Jawaharlal Nehru Port Trust",
+    "portCode": "JNPT",
+    "country": "India",
+    "type": "loading",
+    "transportModes": ["sea"],
+    "facilities": ["Container Terminal", "Air Cargo Complex", "Customs Clearance", "Cold Storage"],
+    "customsClearance": true,
+    "storageCapacity": 50000,
+    "specialCertifications": ["WHO-GMP", "GDP", "Cold Chain"],
+    "operatingHours": {
+      "weekdays": "24/7",
+      "weekends": "24/7"
+    },
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "portName": "Mumbai Air Cargo Complex",
+    "portCode": "BOM_CARGO",
+    "country": "India",
+    "type": "loading",
+    "transportModes": ["air"],
+    "facilities": ["Air Cargo Terminal", "Cold Storage", "Express Clearance"],
+    "customsClearance": true,
+    "storageCapacity": 10000,
+    "specialCertifications": ["CEIV Pharma", "IATA", "GDP"],
+    "operatingHours": {
+      "weekdays": "24/7",
+      "weekends": "24/7"
+    },
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440003",
+    "portName": "Port of Phnom Penh",
+    "portCode": "PHNOMPENH",
+    "country": "Cambodia",
+    "type": "discharge",
+    "transportModes": ["sea", "road"],
+    "facilities": ["Container Terminal", "Customs Clearance"],
+    "customsClearance": true,
+    "storageCapacity": 5000,
+    "operatingHours": {
+      "weekdays": "8:00 AM - 6:00 PM",
+      "weekends": "Closed"
+    },
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

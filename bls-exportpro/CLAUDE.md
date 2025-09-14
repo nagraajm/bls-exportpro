@@ -114,6 +114,15 @@ All APIs follow RESTful conventions under `/api` prefix:
 - Excel Import: `/api/excel/import/*` - Bulk data import
 - MIS Reports: `/api/mis-reports/*` - Business intelligence reports
 
+### New Export Management APIs (September 2025)
+- Brand Registrations: `/api/brand-registrations/*` - Complete brand management with FPS integration
+- Export Configuration: `/api/export-config/*` - Ports, shipping methods, Incoterms, exchange rates, payment terms
+  - `/api/export-config/ports` - Port configuration management
+  - `/api/export-config/shipping-methods` - Shipping methods and cost structures
+  - `/api/export-config/incoterms` - Incoterms definitions and responsibilities
+  - `/api/export-config/exchange-rates` - Multi-currency exchange rates with dynamic updates
+  - `/api/export-config/payment-terms` - Payment terms and credit configurations
+
 ## Development Guidelines
 
 ### File Organization
@@ -171,8 +180,18 @@ uploads/
 Currently using hybrid storage:
 - **JSON Files**: Primary data storage in `/data/` directory
   - customers.json, products.json, invoices.json, orders.json, suppliers.json
+  - **New Export Management Files**:
+    - brand-registrations.json - Brand registration and FPS integration data
+    - fps-integrations.json - FPS system synchronization records  
+    - ports.json - Port configurations (JNPT, Mumbai Air Cargo, Phnom Penh)
+    - shipping-methods.json - Sea/Air/Road transport configurations
+    - incoterms.json - CIF, FOB, EXW terms with responsibility matrices
+    - exchange-rates.json - Multi-currency rates with historical tracking
+    - payment-terms.json - DP, DA, CAD, LC payment configurations
 - **SQLite Database**: `pharma.db` for future migration
 - **Repository Pattern**: Abstracts storage implementation for easy migration
+  - JsonBaseRepository for new export management modules
+  - BaseRepository (SQLite) for existing core modules
 
 ## Frontend Routes
 - `/` - Dashboard with metrics and charts (Revenue, Compliance, Orders)
@@ -345,6 +364,45 @@ curl -X GET "https://blsexport.nmdevai.com/api/invoices/ORD-2024-001/download?ty
 - **Server Configuration**: Hetzner server (157.180.18.119) with Nginx, PM2, and UFW firewall
 - **File Organization**: Cleaned deploy directory and archived unused deployment scripts
 - **Git Management**: Proper commit messages and branch management
+
+### Major System Enhancement (September 2025)
+
+#### Comprehensive Export Management System Implementation
+- **Brand Registration System**: Complete pharmaceutical brand management with FPS (Finished Product Specification) integration
+  - Brand specifications, manufacturing details, regulatory approvals
+  - Automatic FPS system synchronization with configurable frequency
+  - Quality parameters and acceptance criteria tracking
+  - Multi-stage approval workflow (pending → approved → rejected)
+
+#### Enhanced Customer/Buyer Management
+- **Comprehensive Buyer Profiles**: Complete export customer management
+  - VAT registration numbers and tax compliance tracking
+  - Export/Domestic business category classification
+  - Regulatory licenses (import, pharmacy, distribution)
+  - Performance metrics and payment history tracking
+  - Trade preferences (Incoterms, ports, shipping methods)
+
+#### Export Documentation System
+- **Incoterms Management**: Complete CIF, CNF, FOB, EXW support with responsibility matrices
+- **Port Configuration**: Loading/discharge ports with facilities and certifications
+  - JNPT, Mumbai Air Cargo, Phnom Penh with capacity and operating hours
+  - Special certifications (WHO-GMP, GDP, Cold Chain, CEIV Pharma)
+- **Shipping Methods**: Sea/Air/Road transport with cost structures and transit times
+- **Documentation Generation**: Automated export certificates and compliance documents
+
+#### Advanced Financial Management
+- **Multi-Currency System**: 16 supported currencies (USD, EUR, INR, GBP, AED, etc.)
+- **Dynamic Exchange Rates**: Auto-updating rates from RBI, market APIs with historical tracking
+- **Payment Terms Configuration**: DP Sight, CAD, DA (30-120 days), LC at sight
+- **Credit Management**: Outstanding payment tracking, penalty calculations
+- **Banking Integration**: Multi-bank support with correspondent banking details
+
+#### System Integration & Architecture
+- **Repository Pattern Enhancement**: JSON-based repositories for new modules
+- **FPS Integration**: Real-time synchronization with external specification systems
+- **Type System Expansion**: 200+ new TypeScript interfaces across 8 modules
+- **Automated Workflows**: End-to-end export process automation
+- **Data Persistence**: Hybrid JSON/SQLite with easy migration path
 
 ### Previous Updates
 - Complete deployment sync and configuration updates

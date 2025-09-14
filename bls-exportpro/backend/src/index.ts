@@ -27,6 +27,8 @@ import orderCreationRoutes from './routes/order-creation.routes';
 import excelImportRoutes from './routes/excel-import.routes';
 import cambodiaExcelRoutes from './routes/cambodia-excel.routes';
 import statusUploadRoutes from './routes/status-upload.routes';
+import brandRegistrationRoutes from './routes/brand-registration.routes';
+import exportConfigRoutes from './routes/export-config.routes';
 
 dotenv.config();
 
@@ -72,6 +74,8 @@ app.use(`${API_PREFIX}/excel-import`, excelImportRoutes);
 app.use(`${API_PREFIX}/cambodia-excel`, cambodiaExcelRoutes);
 app.use(`${API_PREFIX}/status-upload`, statusUploadRoutes);
 app.use(`${API_PREFIX}/mis-reports`, misReportsRoutes);
+app.use(`${API_PREFIX}/brand-registrations`, brandRegistrationRoutes);
+app.use(`${API_PREFIX}/export-config`, exportConfigRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

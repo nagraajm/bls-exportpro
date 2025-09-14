@@ -121,3 +121,100 @@ export const ProductInventorySchema = z.object({
 });
 
 export type ProductInventory = z.infer<typeof ProductInventorySchema>;
+
+export const BrandRegistrationSchema = z.object({
+  id: z.string().uuid(),
+  brandName: z.string().min(1, 'Brand name is required'),
+  brandCode: z.string().min(1, 'Brand code is required'),
+  genericName: z.string().min(1, 'Generic name is required'),
+  therapeuticCategory: z.string().min(1, 'Therapeutic category is required'),
+  dosageForm: z.enum(['tablet', 'capsule', 'injection', 'syrup', 'ointment', 'drops', 'powder', 'suspension']),
+  strength: z.string().min(1, 'Strength is required'),
+  packSizes: z.array(z.object({
+    size: z.string(),
+    unit: z.enum(['tablets', 'capsules', 'ml', 'grams', 'vials', 'bottles']),
+    packType: z.enum(['blister', 'bottle', 'vial', 'tube', 'sachet'])
+  })).min(1, 'At least one pack size is required'),
+  manufacturerId: z.string().uuid(),
+  manufacturerDetails: z.object({
+    name: z.string(),
+    licenseNo: z.string(),
+    address: z.string()
+  }),
+  fpsDetails: z.object({
+    fpsNumber: z.string().min(1, 'FPS number is required'),
+    fpsVersion: z.string().min(1, 'FPS version is required'),
+    approvedDate: z.date(),
+    expiryDate: z.date(),
+    regulatoryAuthority: z.string()
+  }),
+  specifications: z.object({
+    appearance: z.string().optional(),
+    activeIngredients: z.array(z.object({
+      name: z.string(),
+      quantity: z.string(),
+      unit: z.string()
+    })),
+    excipients: z.array(z.object({
+      name: z.string(),
+      purpose: z.string()
+    })).optional(),
+    shelfLife: z.number().min(1).max(60), // months
+    storageConditions: z.string()
+  }),
+  regulatoryStatus: z.object({
+    domesticApproval: z.object({
+      isApproved: z.boolean(),
+      approvalNumber: z.string().optional(),
+      approvalDate: z.date().optional()
+    }),
+    exportApprovals: z.array(z.object({
+      country: z.string(),
+      approvalNumber: z.string(),
+      approvalDate: z.date(),
+      expiryDate: z.date(),
+      registrationAuthority: z.string()
+    })).optional()
+  }),
+  qualityParameters: z.array(z.object({
+    parameter: z.string(),
+    specification: z.string(),
+    testMethod: z.string(),
+    acceptanceCriteria: z.string()
+  })).optional(),
+  status: z.enum(['active', 'inactive', 'discontinued', 'under_development']),
+  approvalWorkflow: z.object({
+    status: z.enum(['pending', 'approved', 'rejected']),
+    approvedBy: z.string().optional(),
+    approvalDate: z.date().optional(),
+    rejectionReason: z.string().optional()
+  }),
+  createdBy: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type BrandRegistration = z.infer<typeof BrandRegistrationSchema>;
+
+export const FPSIntegrationSchema = z.object({
+  id: z.string().uuid(),
+  brandId: z.string().uuid(),
+  fpsSystemId: z.string(),
+  syncStatus: z.enum(['pending', 'synced', 'failed', 'outdated']),
+  lastSyncDate: z.date().optional(),
+  syncErrors: z.array(z.string()).optional(),
+  autoSync: z.boolean().default(true),
+  syncFrequency: z.enum(['realtime', 'hourly', 'daily', 'manual']).default('daily'),
+  mappingConfig: z.object({
+    fieldMappings: z.record(z.string(), z.string()), // Local field -> FPS field
+    transformRules: z.array(z.object({
+      field: z.string(),
+      rule: z.string(),
+      parameters: z.record(z.string(), z.any()).optional()
+    })).optional()
+  }).optional(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type FPSIntegration = z.infer<typeof FPSIntegrationSchema>;

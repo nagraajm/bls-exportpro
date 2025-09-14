@@ -29,21 +29,93 @@ export const CustomerSchema = z.object({
   country: z.string().min(1, 'Country is required'),
   countryCode: z.string().length(2, 'Country code must be 2 characters'),
   address: AddressSchema,
+  
+  // Registration & Tax Information
   registrationNo: z.string().min(1, 'Registration number is required'),
   taxId: z.string().optional(),
+  vatRegistrationNumber: z.string().optional(),
   importLicenseNo: z.string().optional(),
+  
+  // Contact Information
   contactDetails: z.array(ContactDetailsSchema).min(1, 'At least one contact is required'),
-  customerType: z.enum(['distributor', 'hospital', 'pharmacy', 'government', 'other']),
+  telephoneNumber: z.string().regex(/^\+?[\d\s-()]+$/, 'Invalid telephone number').optional(),
+  
+  // Business Classification
+  customerType: z.enum(['distributor', 'hospital', 'pharmacy', 'government', 'manufacturer', 'wholesaler', 'retailer', 'other']),
+  businessCategory: z.enum(['export', 'domestic', 'both']).default('export'),
   status: z.enum(['active', 'inactive', 'blacklisted']),
+  
+  // Financial Information
   creditLimit: z.number().min(0).optional(),
   paymentTerms: z.number().min(0).max(180).optional(), // days
+  preferredCurrency: z.enum(['USD', 'EUR', 'INR', 'GBP', 'AED']).default('USD'),
+  outstandingAmount: z.number().min(0).default(0),
+  
+  // Banking Details
   bankDetails: z.object({
     bankName: z.string(),
     accountNumber: z.string(),
     swiftCode: z.string().optional(),
     iban: z.string().optional(),
-    routingNumber: z.string().optional()
+    routingNumber: z.string().optional(),
+    correspondentBank: z.object({
+      name: z.string(),
+      swiftCode: z.string(),
+      address: z.string()
+    }).optional()
   }).optional(),
+  
+  // Regulatory & Compliance
+  regulatoryDetails: z.object({
+    drugImportLicense: z.object({
+      licenseNumber: z.string(),
+      issuingAuthority: z.string(),
+      validFrom: z.date(),
+      validTo: z.date()
+    }).optional(),
+    pharmacyLicense: z.object({
+      licenseNumber: z.string(),
+      issuingAuthority: z.string(),
+      validFrom: z.date(),
+      validTo: z.date()
+    }).optional(),
+    distributionLicense: z.object({
+      licenseNumber: z.string(),
+      issuingAuthority: z.string(),
+      validFrom: z.date(),
+      validTo: z.date()
+    }).optional(),
+    gmpCertificate: z.object({
+      certificateNumber: z.string(),
+      issuingBody: z.string(),
+      validFrom: z.date(),
+      validTo: z.date()
+    }).optional()
+  }).optional(),
+  
+  // Trade & Export Preferences
+  tradePreferences: z.object({
+    preferredIncoterms: z.array(z.enum(['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF'])).optional(),
+    preferredPortOfDischarge: z.string().optional(),
+    preferredShippingMethod: z.enum(['sea', 'air', 'road', 'rail']).optional(),
+    specialHandlingRequirements: z.string().optional()
+  }).optional(),
+  
+  // Performance & History
+  performanceMetrics: z.object({
+    totalOrderValue: z.number().min(0).default(0),
+    totalOrdersPlaced: z.number().min(0).default(0),
+    averageOrderValue: z.number().min(0).default(0),
+    paymentDelayDays: z.number().min(0).default(0),
+    returnsPercentage: z.number().min(0).max(100).default(0),
+    customerSince: z.date().optional()
+  }).optional(),
+  
+  // Additional Information
+  notes: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  assignedSalesRep: z.string().optional(),
+  
   createdAt: z.date(),
   updatedAt: z.date()
 });
@@ -155,3 +227,71 @@ export const FreightForwarderSchema = z.object({
 });
 
 export type FreightForwarder = z.infer<typeof FreightForwarderSchema>;
+
+export const PortConfigurationSchema = z.object({
+  id: z.string().uuid(),
+  portName: z.string().min(1, 'Port name is required'),
+  portCode: z.string().min(1, 'Port code is required'),
+  country: z.string().min(1, 'Country is required'),
+  type: z.enum(['loading', 'discharge', 'both']),
+  transportModes: z.array(z.enum(['sea', 'air', 'road', 'rail'])),
+  facilities: z.array(z.string()).optional(),
+  customsClearance: z.boolean().default(true),
+  storageCapacity: z.number().optional(),
+  specialCertifications: z.array(z.string()).optional(),
+  operatingHours: z.object({
+    weekdays: z.string(),
+    weekends: z.string()
+  }).optional(),
+  contactDetails: ContactDetailsSchema.optional(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type PortConfiguration = z.infer<typeof PortConfigurationSchema>;
+
+export const ShippingMethodSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, 'Shipping method name is required'),
+  mode: z.enum(['sea', 'air', 'road', 'rail']),
+  transitTime: z.object({
+    min: z.number().min(1),
+    max: z.number().min(1),
+    unit: z.enum(['days', 'weeks'])
+  }),
+  costStructure: z.object({
+    baseRate: z.number().min(0),
+    currency: z.enum(['USD', 'EUR', 'INR']),
+    rateType: z.enum(['per_kg', 'per_cbm', 'flat_rate']),
+    additionalCharges: z.array(z.object({
+      name: z.string(),
+      amount: z.number(),
+      mandatory: z.boolean()
+    })).optional()
+  }),
+  suitableFor: z.array(z.enum(['pharmaceuticals', 'cold_chain', 'bulk', 'hazardous', 'fragile'])),
+  restrictions: z.array(z.string()).optional(),
+  isActive: z.boolean().default(true),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type ShippingMethod = z.infer<typeof ShippingMethodSchema>;
+
+export const IncotermsConfigSchema = z.object({
+  id: z.string().uuid(),
+  term: z.enum(['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF']),
+  description: z.string(),
+  sellerResponsibilities: z.array(z.string()),
+  buyerResponsibilities: z.array(z.string()),
+  riskTransferPoint: z.string(),
+  applicableTransportModes: z.array(z.enum(['sea', 'air', 'road', 'rail', 'multimodal'])),
+  insuranceRequired: z.boolean(),
+  customsClearanceBy: z.enum(['seller', 'buyer', 'either']),
+  commonUseCases: z.array(z.string()).optional(),
+  isActive: z.boolean().default(true),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
+
+export type IncotermsConfig = z.infer<typeof IncotermsConfigSchema>;

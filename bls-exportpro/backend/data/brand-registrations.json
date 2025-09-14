@@ -1,0 +1,112 @@
+[
+  {
+    "id": "brand-001",
+    "brandName": "Paracetamol Plus",
+    "brandCode": "PP001",
+    "genericName": "Paracetamol",
+    "therapeuticCategory": "Analgesics",
+    "dosageForm": "tablet",
+    "strength": "500mg",
+    "packSizes": [
+      {
+        "size": "10",
+        "unit": "tablets",
+        "packType": "blister"
+      }
+    ],
+    "manufacturerId": "550e8400-e29b-41d4-a716-446655440000",
+    "manufacturerDetails": {
+      "name": "XYZ Pharmaceuticals",
+      "licenseNo": "MFG12345",
+      "address": "123 Industrial Area, Mumbai"
+    },
+    "fpsDetails": {
+      "fpsNumber": "FPS001",
+      "fpsVersion": "v1.0",
+      "approvedDate": "2024-01-01T00:00:00.000Z",
+      "expiryDate": "2026-01-01T00:00:00.000Z",
+      "regulatoryAuthority": "CDSCO"
+    },
+    "specifications": {
+      "activeIngredients": [
+        {
+          "name": "Paracetamol",
+          "quantity": "500",
+          "unit": "mg"
+        }
+      ],
+      "shelfLife": 24,
+      "storageConditions": "Store below 25°C"
+    },
+    "regulatoryStatus": {
+      "domesticApproval": {
+        "isApproved": true,
+        "approvalNumber": "CDSCO/APP/001",
+        "approvalDate": "2024-01-01T00:00:00.000Z"
+      }
+    },
+    "status": "active",
+    "approvalWorkflow": {
+      "status": "approved",
+      "approvedBy": "regulatory_admin",
+      "approvalDate": "2024-01-01T00:00:00.000Z"
+    },
+    "createdBy": "admin",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "brandName": "Azithromycin Plus",
+    "brandCode": "AZ001",
+    "genericName": "Azithromycin",
+    "therapeuticCategory": "Antibiotics",
+    "dosageForm": "tablet",
+    "strength": "500mg",
+    "packSizes": [
+      {
+        "size": "6",
+        "unit": "tablets",
+        "packType": "blister"
+      }
+    ],
+    "manufacturerId": "550e8400-e29b-41d4-a716-446655440001",
+    "manufacturerDetails": {
+      "name": "ABC Pharmaceuticals Ltd",
+      "licenseNo": "MFG67890",
+      "address": "456 Pharma Park, Delhi"
+    },
+    "fpsDetails": {
+      "fpsNumber": "FPS002",
+      "fpsVersion": "v2.0",
+      "approvedDate": "2024-02-01T00:00:00.000Z",
+      "expiryDate": "2027-02-01T00:00:00.000Z",
+      "regulatoryAuthority": "CDSCO"
+    },
+    "specifications": {
+      "activeIngredients": [
+        {
+          "name": "Azithromycin",
+          "quantity": "500",
+          "unit": "mg"
+        }
+      ],
+      "shelfLife": 36,
+      "storageConditions": "Store below 30°C"
+    },
+    "regulatoryStatus": {
+      "domesticApproval": {
+        "isApproved": true,
+        "approvalNumber": "CDSCO/APP/002",
+        "approvalDate": "2024-02-01T00:00:00.000Z"
+      }
+    },
+    "status": "active",
+    "approvalWorkflow": {
+      "status": "pending"
+    },
+    "createdBy": "test_admin",
+    "id": "7eb96040-e93c-453c-aca2-faacad5c6571",
+    "createdAt": "2025-09-14T02:30:33.362Z",
+    "updatedAt": "2025-09-14T02:30:33.362Z"
+  }
+]

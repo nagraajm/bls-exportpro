@@ -1,0 +1,99 @@
+[
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440001",
+    "name": "CAD - Cash Against Documents",
+    "description": "Payment made against presentation of shipping documents",
+    "creditDays": 0,
+    "paymentMethod": "CAD",
+    "advancePercentage": 0,
+    "penaltyTerms": {
+      "gracePeriod": 0,
+      "penaltyRate": 0
+    },
+    "isDefault": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440002",
+    "name": "DP Sight - Documents Against Payment at Sight",
+    "description": "Documents released against immediate payment",
+    "creditDays": 0,
+    "paymentMethod": "DP",
+    "advancePercentage": 0,
+    "penaltyTerms": {
+      "gracePeriod": 3,
+      "penaltyRate": 18,
+      "compoundInterval": "annually"
+    },
+    "isDefault": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440003",
+    "name": "DA 30 Days - Documents Against Acceptance",
+    "description": "30 days credit after acceptance of documents",
+    "creditDays": 30,
+    "paymentMethod": "DA",
+    "advancePercentage": 0,
+    "penaltyTerms": {
+      "gracePeriod": 7,
+      "penaltyRate": 18,
+      "compoundInterval": "annually"
+    },
+    "isDefault": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440004",
+    "name": "DA 60 Days - Documents Against Acceptance",
+    "description": "60 days credit after acceptance of documents",
+    "creditDays": 60,
+    "paymentMethod": "DA",
+    "advancePercentage": 0,
+    "penaltyTerms": {
+      "gracePeriod": 7,
+      "penaltyRate": 18,
+      "compoundInterval": "annually"
+    },
+    "isDefault": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440005",
+    "name": "LC at Sight - Letter of Credit at Sight",
+    "description": "Payment through Letter of Credit at sight",
+    "creditDays": 0,
+    "paymentMethod": "LC",
+    "advancePercentage": 0,
+    "lcTerms": {
+      "lcType": "sight",
+      "tolerancePercentage": 5
+    },
+    "penaltyTerms": {
+      "gracePeriod": 0,
+      "penaltyRate": 0
+    },
+    "isDefault": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440006",
+    "name": "Advance Payment - 100%",
+    "description": "100% advance payment before shipment",
+    "creditDays": 0,
+    "paymentMethod": "bank_transfer",
+    "advancePercentage": 100,
+    "penaltyTerms": {
+      "gracePeriod": 0,
+      "penaltyRate": 0
+    },
+    "isDefault": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

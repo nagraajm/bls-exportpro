@@ -10,6 +10,7 @@ import invoiceRoutes from './invoice.routes';
 import packingListRoutes from './packing-list.routes';
 import orderCreationRoutes from './order-creation.routes';
 import dashboardRoutes from './dashboard.routes';
+import brandRegistrationRoutes from './brand-registration.routes';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/invoices', invoiceRoutes);
 router.use('/packing-lists', packingListRoutes);
 router.use('/order-creation', orderCreationRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/brand-registrations', brandRegistrationRoutes);
 
 export default router;

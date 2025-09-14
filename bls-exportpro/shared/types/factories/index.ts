@@ -66,6 +66,7 @@ export const createCustomer = (overrides?: Partial<Customer>): Customer => ({
   name: faker.company.name(),
   country: faker.location.country(),
   countryCode: faker.location.countryCode(),
+  businessCategory: 'export' as const,
   address: {
     line1: faker.location.streetAddress(),
     line2: faker.location.secondaryAddress(),
@@ -90,6 +91,8 @@ export const createCustomer = (overrides?: Partial<Customer>): Customer => ({
   ],
   customerType: faker.helpers.arrayElement(['distributor', 'hospital', 'pharmacy', 'government', 'other']),
   status: faker.helpers.arrayElement(['active', 'inactive', 'blacklisted']),
+  preferredCurrency: 'USD' as const,
+  outstandingAmount: faker.number.int({ min: 0, max: 50000 }),
   creditLimit: faker.number.int({ min: 10000, max: 1000000 }),
   paymentTerms: faker.number.int({ min: 0, max: 90 }),
   bankDetails: {
@@ -296,7 +299,11 @@ export const createExchangeRate = (overrides?: Partial<ExchangeRate>): ExchangeR
   effectiveDate: faker.date.recent(),
   expiryDate: faker.date.future(),
   source: faker.helpers.arrayElement(['RBI', 'market', 'custom', 'bank']),
+  rateType: 'mid' as const,
+  margin: faker.number.float({ min: 0, max: 2, fractionDigits: 2 }),
   isActive: true,
+  autoUpdate: faker.datatype.boolean(),
+  updateFrequency: 'daily' as const,
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
   ...overrides

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const CurrencySchema = z.enum(['USD', 'EUR', 'GBP', 'INR', 'AED', 'SAR', 'CNY', 'JPY', 'AUD', 'CAD']);
+export const CurrencySchema = z.enum(['USD', 'EUR', 'GBP', 'INR', 'AED', 'SAR', 'CNY', 'JPY', 'AUD', 'CAD', 'CHF', 'SGD', 'HKD', 'KRW', 'THB', 'MYR']);
 
 export type Currency = z.infer<typeof CurrencySchema>;
 
@@ -11,8 +11,23 @@ export const ExchangeRateSchema = z.object({
   rate: z.number().min(0),
   effectiveDate: z.date(),
   expiryDate: z.date().optional(),
-  source: z.enum(['RBI', 'market', 'custom', 'bank']),
+  source: z.enum(['RBI', 'market', 'custom', 'bank', 'api', 'manual']),
+  sourceDetails: z.object({
+    provider: z.string().optional(),
+    apiEndpoint: z.string().optional(),
+    lastFetchTime: z.date().optional(),
+    nextUpdateTime: z.date().optional()
+  }).optional(),
+  rateType: z.enum(['spot', 'forward', 'buying', 'selling', 'mid']).default('mid'),
+  margin: z.number().default(0), // Margin percentage applied
   isActive: z.boolean(),
+  autoUpdate: z.boolean().default(false),
+  updateFrequency: z.enum(['realtime', 'hourly', 'daily', 'weekly', 'manual']).default('daily'),
+  historicalRates: z.array(z.object({
+    rate: z.number(),
+    timestamp: z.date(),
+    source: z.string()
+  })).optional(),
   createdAt: z.date(),
   updatedAt: z.date()
 });

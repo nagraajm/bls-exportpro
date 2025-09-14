@@ -1,0 +1,76 @@
+[
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440001",
+    "fromCurrency": "USD",
+    "toCurrency": "INR",
+    "rate": 83.25,
+    "effectiveDate": "2025-01-14T00:00:00.000Z",
+    "source": "RBI",
+    "sourceDetails": {
+      "provider": "Reserve Bank of India",
+      "lastFetchTime": "2025-01-14T09:00:00.000Z",
+      "nextUpdateTime": "2025-01-15T09:00:00.000Z"
+    },
+    "rateType": "mid",
+    "margin": 0.5,
+    "isActive": true,
+    "autoUpdate": true,
+    "updateFrequency": "daily",
+    "historicalRates": [
+      {
+        "rate": 83.20,
+        "timestamp": "2025-01-13T09:00:00.000Z",
+        "source": "RBI"
+      },
+      {
+        "rate": 83.15,
+        "timestamp": "2025-01-12T09:00:00.000Z",
+        "source": "RBI"
+      }
+    ],
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-14T09:00:00.000Z"
+  },
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440002",
+    "fromCurrency": "EUR",
+    "toCurrency": "USD",
+    "rate": 1.08,
+    "effectiveDate": "2025-01-14T00:00:00.000Z",
+    "source": "market",
+    "sourceDetails": {
+      "provider": "Exchange Rate API",
+      "lastFetchTime": "2025-01-14T10:00:00.000Z",
+      "nextUpdateTime": "2025-01-14T11:00:00.000Z"
+    },
+    "rateType": "mid",
+    "margin": 0.25,
+    "isActive": true,
+    "autoUpdate": true,
+    "updateFrequency": "hourly",
+    "historicalRates": [
+      {
+        "rate": 1.075,
+        "timestamp": "2025-01-13T10:00:00.000Z",
+        "source": "market"
+      }
+    ],
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-14T10:00:00.000Z"
+  },
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440003",
+    "fromCurrency": "INR",
+    "toCurrency": "USD",
+    "rate": 0.012,
+    "effectiveDate": "2025-01-14T00:00:00.000Z",
+    "source": "RBI",
+    "rateType": "mid",
+    "margin": 0.5,
+    "isActive": true,
+    "autoUpdate": true,
+    "updateFrequency": "daily",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-14T09:00:00.000Z"
+  }
+]
